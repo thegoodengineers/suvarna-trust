@@ -52,4 +52,4 @@ Design references and choices: `design/REFS.md`.
 
 ## Team
 How we work, dates and who owns what: [`CONTRIBUTING.md`](CONTRIBUTING.md). Each person's tasks: [`tasks/`](tasks/).
-Field interview guide: [`docs/FIELD.md`](docs/FIELD.md). Form answers: [`docs/FORM_ANSWERS.md`](docs/FORM_ANSWERS.md).
+Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Field interview guide: [`docs/FIELD.md`](docs/FIELD.md). Form answers: [`docs/FORM_ANSWERS.md`](docs/FORM_ANSWERS.md).
