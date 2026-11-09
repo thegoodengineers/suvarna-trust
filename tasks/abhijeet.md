@@ -6,18 +6,28 @@ code comments, README, docs, the form, the deck, screenshots or videos. No `Co-A
 Describing the product's own agent is fine. Before you push: `git log --format=%B | grep -i co-authored` prints nothing.
 Branch: `<yourname>/<task>` → pull request into `main`. Run `python -m pytest -q` before every push.
 
-## 1. Agent spike: explain a gap in plain language (by 13 Nov, 9:00 PM)
-Today `ledger.investigate()` returns fixed English sentences. The agent's job is to turn those facts into a
-short, polite explanation each side can understand, in Hindi or Kannada, and suggest the next step.
-- New file: `agent.py`. Input: the output of `reconcile()` and `investigate()` as JSON. Output: text.
-- [ ] Check our Lyzr AI credits (the event's AI partner) and build the agent there if it fits; any LLM API
-      read from environment variables is fine for the spike. Never commit a key.
-- [ ] The agent may only restate numbers it was given. Add a test that fails if its text contains a weight
-      that isn't in the input (it must never compute a balance).
-- [ ] It never says who is at fault. Add a test for that too (no "you stole", "your fault", etc.).
-- [ ] If the API isn't set or fails, fall back to the plain sentences from `investigate()`.
-- Done when: the jeweller and karigar phones show the agent's explanation under "What the records show",
-  and the tests pass with and without a key.
+## 1. Agent: extend `agent.py`, don't start from zero (by 13 Nov, 9:00 PM)
+A first version is merged. `agent.explain(reconcile, findings, lang, chain_ok)` turns the ledger's facts into a
+short, polite explanation in `en`, `hi` or `kn` plus one next step, and both phones show it under
+"What the records show". Read `agent.py` and `test_agent.py` first (about 150 lines together).
+What is already there:
+- Fixed templates for every sentence `ledger.investigate()` writes, in three languages. These work with no key.
+- An optional language model (any OpenAI-compatible endpoint) when `SUVARNA_LLM_API_KEY` and `SUVARNA_LLM_MODEL`
+  are set. Its answer is thrown away, and the templates used, if it states a number not in the input, uses a
+  blaming word, or the call fails. Never commit a key.
+- Tests: no invented weights, no blame, works without a key, every finding translated, bad model answers replaced.
+
+What is left for you:
+- [ ] Check our Lyzr AI credits (the event's AI partner). If it fits, point `SUVARNA_LLM_URL` at it or add a small
+      `_ask_lyzr()` beside `_ask_llm()`; the safety checks in `safe()` must stay in front of whatever you call.
+- [ ] Try it with a real key on all four demo states (gap, re-weighed, settled, tampered) in all three languages.
+      Paste one good and one rejected answer into your pull request.
+- [ ] Get Bhumika's Kannada checker to read the `kn` templates in `SAY`, the same way as the karigar phone.
+- [ ] If `ledger.investigate()` gains a new sentence, add its shape to `SHAPES` and a line in each language;
+      `test_every_ledger_finding_is_translated` fails until you do.
+- [ ] Stretch: let the karigar ask "why?" by voice and get the same explanation read aloud.
+- Rule that does not change: the agent explains and suggests. It never computes a balance, moves money, approves,
+  or closes a dispute. It only gets read-only facts, not the ledger object.
 
 ## 2. Architecture note (by 14 Nov)
 - New file: `docs/ARCHITECTURE.md`, one page, for the form's architecture question:

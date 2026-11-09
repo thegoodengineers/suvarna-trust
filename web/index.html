@@ -46,6 +46,7 @@
   h3 { font-size: 14px; margin: 16px 0 8px; }
   .findings { margin: 0; padding-left: 18px; font-size: 14px; }
   .findings li { margin-bottom: 6px; }
+  .explain { font-size: 14px; } .explain p { margin: 0 0 6px; } .explain .next { font-weight: 600; }
   .todo { border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; font-size: 14px; }
   .todo .row { display: flex; gap: 8px; margin-top: 8px; }
   .settle { border: 2px solid var(--ink); border-radius: 16px; padding: 12px 14px; }
@@ -104,7 +105,8 @@
       <div class="readout" id="j-read"><div class="lbl">Unexplained gold</div><div class="big" id="j-gap"></div></div>
       <dl class="sums" id="j-sums"></dl>
       <h3>What the records show</h3>
-      <ul class="findings" id="j-find"></ul>
+      <div class="explain" id="j-explain"></div>
+      <p class="mock">Explained by the agent from the shared record. It never computes a balance, moves money or decides who is right.</p>
       <h3>Waiting for you</h3>
       <div id="j-todo"></div>
       <h3>Settlement</h3>
@@ -128,6 +130,8 @@
         </div>
       </div>
       <div class="readout" id="k-read"><div class="lbl" id="k-lbl"></div><div class="big" id="k-gap"></div></div>
+      <h3 id="k-find-h"></h3>
+      <div class="explain" id="k-explain"></div>
       <div class="voice">
         <button class="gold" type="button" id="speak"></button>
         <button class="primary" type="button" id="listen"></button>
@@ -155,14 +159,14 @@
 
 <script>
 const T = {
-  hi: { lbl: "मेरा हिसाब: बिना हिसाब का सोना", speak: "🔊 सुनिए", listen: "🎤 बोलिए", kind: "क्या", wt: "वज़न (ग्राम)",
+  hi: { lbl: "मेरा हिसाब: बिना हिसाब का सोना", find: "रिकॉर्ड क्या बताते हैं", speak: "🔊 सुनिए", listen: "🎤 बोलिए", kind: "क्या", wt: "वज़न (ग्राम)",
         ret: "वापस किया गहना", scrap: "स्क्रैप / बुरादा", photo: "तराज़ू की फ़ोटो लगी है", save: "दर्ज करें",
         todo: "आपकी पुष्टि बाकी", settle: "भुगतान", nothing: "कुछ बाकी नहीं", approve: "मंज़ूर है", confirm: "सही है",
         heardPrefix: "सुना: ", noMic: "इस ब्राउज़र में आवाज़ नहीं चलती; वज़न टाइप करें।", approved: "मंज़ूर किया",
         badWt: "वज़न समझ नहीं आया।", noVoice: "इस फ़ोन में हिंदी आवाज़ नहीं है; नीचे लिखा पढ़ें।",
         say: (s) => `ऑर्डर ${s.job}. दिया गया ${hiG(s.issue)}. वापस ${hiG(s.ret)}. स्क्रैप ${hiG(s.scrap)}. तय घटत ${hiG(s.wastage)}. ` +
                     (s.gap === 0 ? "पूरा हिसाब मिल गया।" : `बिना हिसाब ${hiG(s.gap)}.`) + ` मज़दूरी ${s.labour} रुपये.` },
-  en: { lbl: "My account: unexplained gold", speak: "🔊 Read it to me", listen: "🎤 Speak a weight", kind: "What", wt: "Weight (grams)",
+  en: { lbl: "My account: unexplained gold", find: "What the records show", speak: "🔊 Read it to me", listen: "🎤 Speak a weight", kind: "What", wt: "Weight (grams)",
         ret: "Finished piece returned", scrap: "Scrap / filings", photo: "Scale photo attached", save: "Record",
         todo: "Waiting for you", settle: "Payment", nothing: "Nothing waiting", approve: "I approve", confirm: "Confirm",
         heardPrefix: "Heard: ", noMic: "Voice isn't available in this browser; type the weight.", approved: "Approved",
@@ -170,7 +174,7 @@ const T = {
         say: (s) => `Order ${s.job}. Issued ${enG(s.issue)}. Returned ${enG(s.ret)}. Scrap ${enG(s.scrap)}. Agreed wastage ${enG(s.wastage)}. ` +
                     (s.gap === 0 ? "Everything is accounted for." : `Unexplained ${enG(s.gap)}.`) + ` Labour ${s.labour} rupees.` },
   // Kannada: still to be checked line by line by a native speaker (tasks/bhumika.md).
-  kn: { lbl: "ನನ್ನ ಲೆಕ್ಕ: ಲೆಕ್ಕಕ್ಕೆ ಸಿಗದ ಚಿನ್ನ", speak: "🔊 ಓದಿ ಹೇಳಿ", listen: "🎤 ತೂಕ ಹೇಳಿ", kind: "ಏನು", wt: "ತೂಕ (ಗ್ರಾಂ)",
+  kn: { lbl: "ನನ್ನ ಲೆಕ್ಕ: ಲೆಕ್ಕಕ್ಕೆ ಸಿಗದ ಚಿನ್ನ", find: "ದಾಖಲೆಗಳು ಏನು ಹೇಳುತ್ತವೆ", speak: "🔊 ಓದಿ ಹೇಳಿ", listen: "🎤 ತೂಕ ಹೇಳಿ", kind: "ಏನು", wt: "ತೂಕ (ಗ್ರಾಂ)",
         ret: "ವಾಪಸ್ ಕೊಟ್ಟ ಆಭರಣ", scrap: "ಸ್ಕ್ರ್ಯಾಪ್ / ಪುಡಿ", photo: "ತಕ್ಕಡಿಯ ಫೋಟೋ ಇದೆ", save: "ದಾಖಲಿಸಿ",
         todo: "ನಿಮ್ಮ ದೃಢೀಕರಣ ಬಾಕಿ", settle: "ಪಾವತಿ", nothing: "ಏನೂ ಬಾಕಿ ಇಲ್ಲ", approve: "ಒಪ್ಪಿಗೆ ಇದೆ", confirm: "ಸರಿ ಇದೆ",
         heardPrefix: "ಕೇಳಿದ್ದು: ", noMic: "ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಧ್ವನಿ ಸೌಲಭ್ಯ ಇಲ್ಲ; ತೂಕವನ್ನು ಟೈಪ್ ಮಾಡಿ.", approved: "ಒಪ್ಪಿಗೆ ನೀಡಿದ್ದೀರಿ",
@@ -243,7 +247,7 @@ function render() {
   $("j-read").classList.toggle("alert", gap !== 0); $("k-read").classList.toggle("alert", gap !== 0);
   $("j-sums").innerHTML = [["Issued", r.issue], ["Returned", r.return], ["Scrap", r.scrap], ["Agreed wastage", r.wastage]]
     .map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
-  $("j-find").innerHTML = S.findings.length ? S.findings.map((f) => `<li>${esc(f)}</li>`).join("") : "<li>Every gram is accounted for.</li>";
+  explain($("j-explain"), S.agent.en); explain($("k-explain"), S.agent[lang]);
   todo("jeweller", $("j-todo"), "Confirm", "Nothing waiting");
   todo("karigar", $("k-todo"), t.confirm, t.nothing);
   settle("jeweller", $("j-settle"), "I approve this settlement");
@@ -267,8 +271,15 @@ function render() {
   $("k-lbl").textContent = t.lbl; $("speak").textContent = t.speak; $("listen").textContent = t.listen;
   $("l-kind").textContent = t.kind; $("l-wt").textContent = t.wt; $("l-photo").textContent = t.photo; $("save").textContent = t.save;
   $("kind").options[0].textContent = t.ret; $("kind").options[1].textContent = t.scrap;
-  $("k-todo-h").textContent = t.todo; $("k-settle-h").textContent = t.settle;
+  $("k-find-h").textContent = t.find; $("k-todo-h").textContent = t.todo; $("k-settle-h").textContent = t.settle;
   $("h-k").parentElement.parentElement.lang = lang;
+}
+
+// The agent's explanation (agent.py): what the records show and one next step. It restates; it never computes.
+function explain(el, a) {
+  el.innerHTML = `<p>${esc(a.summary)}</p>` +
+    (a.points.length ? `<ul class="findings">${a.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>` : "") +
+    `<p class="next">${esc(a.next)}</p>`;
 }
 
 function todo(party, el, btn, none) {
