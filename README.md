@@ -45,3 +45,7 @@ Passport, and an assisted JanAI Café path.
 
 Demo data is illustrative, not field data. Payment is simulated and labelled.
 Design references and choices: `design/REFS.md`.
+
+## Team
+How we work, dates and who owns what: [`CONTRIBUTING.md`](CONTRIBUTING.md). Each person's tasks: [`tasks/`](tasks/).
+Field interview guide: [`docs/FIELD.md`](docs/FIELD.md). Form answers: [`docs/FORM_ANSWERS.md`](docs/FORM_ANSWERS.md).
