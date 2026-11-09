@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
+import agent
 from ledger import Ledger, grams
 
 HERE = pathlib.Path(__file__).parent
@@ -35,11 +36,12 @@ def view():
     s = L.settlement(JOB, RATE)
     entries = [{**e, "grams": grams(e["mg"]) if "mg" in e else None, "confirmed": e["type"] == "weight" and L.is_confirmed(e["n"])}
                for e in L.entries]
-    r = L.reconcile(JOB)
-    return {"job": JOB, "rate_paise_per_g": RATE, "entries": entries, "chain_ok": L.verify() is None,
+    r, findings, chain_ok = L.reconcile(JOB), L.investigate(JOB), L.verify() is None
+    return {"job": JOB, "rate_paise_per_g": RATE, "entries": entries, "chain_ok": chain_ok,
             "reconcile": {k: (grams(v) if isinstance(v, int) else None) for k, v in r.items() if k not in ("job", "pending")}
                          | {"unexplained_mg": r["unexplained"]},
-            "findings": L.investigate(JOB), "settlement": s}
+            "findings": findings, "agent": {lang: agent.explain(r, findings, lang, chain_ok) for lang in agent.LANGS},
+            "settlement": s}
 
 
 class Record(BaseModel):

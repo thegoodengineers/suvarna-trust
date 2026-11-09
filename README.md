@@ -29,12 +29,16 @@ The karigar's phone works in Kannada, Hindi or English, reads the account aloud,
 - Only entries the *other* party confirmed count. You can't confirm your own entry.
 - An approval is for one exact settlement. If anything changes, earlier approvals lapse.
 - Payment is refused unless both approved, nothing is unexplained, and the history is intact. Never twice.
-- The AI layer (prototype round) explains and coordinates. It never computes a balance or decides a dispute.
+- The agent (`agent.py`, checked by `test_agent.py`) explains what the records show in English, Hindi or Kannada
+  and suggests one next step. It only restates weights it was given, never blames anyone, and never computes a
+  balance, moves money or decides a dispute. It uses a language model only if `SUVARNA_LLM_API_KEY` and
+  `SUVARNA_LLM_MODEL` are set (any OpenAI-compatible endpoint via `SUVARNA_LLM_URL`); otherwise, or if the
+  model's answer breaks a rule, it uses fixed templates.
 
 ## Run it
 ```
 python -m pip install -r requirements.txt
-python -m pytest -q                              # 11 checks on the ledger
+python -m pytest -q                              # checks on the ledger and the agent
 python -m uvicorn server:app --port 8770         # open http://localhost:8770
 ```
 
