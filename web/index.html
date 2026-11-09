@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SUVARNA TRUST: one gold record for jeweller and karigar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Martian+Mono:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Martian+Mono:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --velvet: #123129; --velvet-deep: #0B211C; --readout: #E9F5B8; --lcd: #1B2420; --gold: #C8A24A;
@@ -15,6 +15,7 @@
   body { margin: 0; font-family: "Hanken Grotesk", system-ui, sans-serif; color: var(--ink); line-height: 1.45;
          background: radial-gradient(120% 80% at 50% 0%, var(--velvet) 0%, var(--velvet-deep) 70%); min-height: 100vh; }
   :lang(hi) { font-family: "Noto Sans Devanagari", "Hanken Grotesk", sans-serif; }
+  :lang(kn) { font-family: "Noto Sans Kannada", "Hanken Grotesk", sans-serif; }
   a { color: inherit; }
   :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
   .wrap { max-width: 1320px; margin: 0 auto; padding: 28px 20px 48px; }
@@ -121,7 +122,8 @@
       <div class="who">
         <h2 id="h-k">Karigar · Ramesh</h2>
         <div class="lang" role="group" aria-label="Language">
-          <button type="button" data-lang="hi" aria-pressed="true">हिंदी</button>
+          <button type="button" data-lang="hi" aria-pressed="true" lang="hi">हिंदी</button>
+          <button type="button" data-lang="kn" aria-pressed="false" lang="kn">ಕನ್ನಡ</button>
           <button type="button" data-lang="en" aria-pressed="false">English</button>
         </div>
       </div>
@@ -156,36 +158,70 @@ const T = {
   hi: { lbl: "मेरा हिसाब: बिना हिसाब का सोना", speak: "🔊 सुनिए", listen: "🎤 बोलिए", kind: "क्या", wt: "वज़न (ग्राम)",
         ret: "वापस किया गहना", scrap: "स्क्रैप / बुरादा", photo: "तराज़ू की फ़ोटो लगी है", save: "दर्ज करें",
         todo: "आपकी पुष्टि बाकी", settle: "भुगतान", nothing: "कुछ बाकी नहीं", approve: "मंज़ूर है", confirm: "सही है",
-        heardPrefix: "सुना: ", noMic: "इस ब्राउज़र में आवाज़ नहीं चलती; वज़न टाइप करें।",
+        heardPrefix: "सुना: ", noMic: "इस ब्राउज़र में आवाज़ नहीं चलती; वज़न टाइप करें।", approved: "मंज़ूर किया",
+        badWt: "वज़न समझ नहीं आया।", noVoice: "इस फ़ोन में हिंदी आवाज़ नहीं है; नीचे लिखा पढ़ें।",
         say: (s) => `ऑर्डर ${s.job}. दिया गया ${hiG(s.issue)}. वापस ${hiG(s.ret)}. स्क्रैप ${hiG(s.scrap)}. तय घटत ${hiG(s.wastage)}. ` +
                     (s.gap === 0 ? "पूरा हिसाब मिल गया।" : `बिना हिसाब ${hiG(s.gap)}.`) + ` मज़दूरी ${s.labour} रुपये.` },
   en: { lbl: "My account: unexplained gold", speak: "🔊 Read it to me", listen: "🎤 Speak a weight", kind: "What", wt: "Weight (grams)",
         ret: "Finished piece returned", scrap: "Scrap / filings", photo: "Scale photo attached", save: "Record",
         todo: "Waiting for you", settle: "Payment", nothing: "Nothing waiting", approve: "I approve", confirm: "Confirm",
-        heardPrefix: "Heard: ", noMic: "Voice isn't available in this browser; type the weight.",
+        heardPrefix: "Heard: ", noMic: "Voice isn't available in this browser; type the weight.", approved: "Approved",
+        badWt: "Couldn't read that weight.", noVoice: "This phone has no English voice; read it below.",
         say: (s) => `Order ${s.job}. Issued ${enG(s.issue)}. Returned ${enG(s.ret)}. Scrap ${enG(s.scrap)}. Agreed wastage ${enG(s.wastage)}. ` +
                     (s.gap === 0 ? "Everything is accounted for." : `Unexplained ${enG(s.gap)}.`) + ` Labour ${s.labour} rupees.` },
+  // Kannada: still to be checked line by line by a native speaker (tasks/bhumika.md).
+  kn: { lbl: "ನನ್ನ ಲೆಕ್ಕ: ಲೆಕ್ಕಕ್ಕೆ ಸಿಗದ ಚಿನ್ನ", speak: "🔊 ಓದಿ ಹೇಳಿ", listen: "🎤 ತೂಕ ಹೇಳಿ", kind: "ಏನು", wt: "ತೂಕ (ಗ್ರಾಂ)",
+        ret: "ವಾಪಸ್ ಕೊಟ್ಟ ಆಭರಣ", scrap: "ಸ್ಕ್ರ್ಯಾಪ್ / ಪುಡಿ", photo: "ತಕ್ಕಡಿಯ ಫೋಟೋ ಇದೆ", save: "ದಾಖಲಿಸಿ",
+        todo: "ನಿಮ್ಮ ದೃಢೀಕರಣ ಬಾಕಿ", settle: "ಪಾವತಿ", nothing: "ಏನೂ ಬಾಕಿ ಇಲ್ಲ", approve: "ಒಪ್ಪಿಗೆ ಇದೆ", confirm: "ಸರಿ ಇದೆ",
+        heardPrefix: "ಕೇಳಿದ್ದು: ", noMic: "ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಧ್ವನಿ ಸೌಲಭ್ಯ ಇಲ್ಲ; ತೂಕವನ್ನು ಟೈಪ್ ಮಾಡಿ.", approved: "ಒಪ್ಪಿಗೆ ನೀಡಿದ್ದೀರಿ",
+        badWt: "ತೂಕ ಅರ್ಥವಾಗಲಿಲ್ಲ.", noVoice: "ಈ ಫೋನ್‌ನಲ್ಲಿ ಕನ್ನಡ ಧ್ವನಿ ಇಲ್ಲ; ಕೆಳಗೆ ಬರೆದಿರುವುದನ್ನು ಓದಿ.",
+        say: (s) => `ಆರ್ಡರ್ ${s.job}. ಕೊಟ್ಟದ್ದು ${knG(s.issue)}. ವಾಪಸ್ ${knG(s.ret)}. ಸ್ಕ್ರ್ಯಾಪ್ ${knG(s.scrap)}. ಒಪ್ಪಿದ ಸವಕಳಿ ${knG(s.wastage)}. ` +
+                    (s.gap === 0 ? "ಎಲ್ಲಾ ಲೆಕ್ಕ ಸರಿಯಾಗಿದೆ." : `ಲೆಕ್ಕಕ್ಕೆ ಸಿಗದ್ದು ${knG(s.gap)}.`) + ` ಕೂಲಿ ${s.labour} ರೂಪಾಯಿ.` },
 };
+const SPEECH = { hi: "hi-IN", en: "en-IN", kn: "kn-IN" };
 let lang = "hi", S = null;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
 const g = (mg) => `${mg < 0 ? "-" : ""}${Math.floor(Math.abs(mg) / 1000)}.${String(Math.abs(mg) % 1000).padStart(3, "0")} g`;
-const hiG = (mg) => { const a = Math.abs(mg), gr = Math.floor(a / 1000), m = a % 1000; return (gr ? `${gr} ग्राम ` : "") + (m ? `${m} मिलीग्राम` : (gr ? "" : "शून्य")); };
-const enG = (mg) => { const a = Math.abs(mg), gr = Math.floor(a / 1000), m = a % 1000; return (gr ? `${gr} grams ` : "") + (m ? `${m} milligrams` : (gr ? "" : "zero")); };
+const hiG = (mg) => { const a = Math.abs(mg), gr = Math.floor(a / 1000), m = a % 1000; return ((gr ? `${gr} ग्राम ` : "") + (m ? `${m} मिलीग्राम` : (gr ? "" : "शून्य"))).trim(); };
+const knG = (mg) => { const a = Math.abs(mg), gr = Math.floor(a / 1000), m = a % 1000; return ((gr ? `${gr} ಗ್ರಾಂ ` : "") + (m ? `${m} ಮಿಲಿಗ್ರಾಂ` : (gr ? "" : "ಸೊನ್ನೆ"))).trim(); };
+const enG = (mg) => { const a = Math.abs(mg), gr = Math.floor(a / 1000), m = a % 1000; return ((gr ? `${gr} grams ` : "") + (m ? `${m} milligrams` : (gr ? "" : "zero"))).trim(); };
 const rupees = (p) => "₹" + Math.floor(p / 100).toLocaleString("en-IN");
 const KIND = { issue: "Gold issued", return: "Piece returned", scrap: "Scrap returned", wastage: "Agreed wastage" };
 const KIND_HI = { issue: "दिया गया सोना", return: "वापस किया गहना", scrap: "स्क्रैप", wastage: "तय घटत" };
+const KIND_KN = { issue: "ಕೊಟ್ಟ ಚಿನ್ನ", return: "ವಾಪಸ್ ಕೊಟ್ಟ ಆಭರಣ", scrap: "ಸ್ಕ್ರ್ಯಾಪ್", wastage: "ಒಪ್ಪಿದ ಸವಕಳಿ" };
+// Why the settlement is blocked, from the ledger's English reason; anything unrecognised is shown as it came.
+const blockedIn = (why) => (reason) => {
+  let m;
+  if (reason === "already paid") return why.paid;
+  if ((m = reason.match(/^(\d+) record\(s\) still need/))) return why.pending(m[1]);
+  if ((m = reason.match(/^(-?[\d.]+ g) is unexplained$/))) return why.gap(m[1]);
+  if ((m = reason.match(/^waiting for (.+) to approve$/))) return why.wait(m[1].split(" and "));
+  if (/^entry \d+ was changed/.test(reason)) return why.seal;
+  return reason;
+};
 // The karigar's phone speaks his language; the jeweller's stays in English.
-const words = (party) => party === "karigar" && lang === "hi"
-  ? { kind: KIND_HI, by: (b) => (b === "jeweller" ? "ज्वैलर ने दर्ज किया" : "आपने दर्ज किया"), photo: "तराज़ू की फ़ोटो के साथ", nophoto: "फ़ोटो नहीं",
-      labour: (x) => `${x} वापस किए गहने की मज़दूरी।`, gap: (x) => `बिना हिसाब: ${x}`, paid: "भुगतान हो गया (नकली UPI)।", notReady: "अभी नहीं: " }
-  : { kind: KIND, by: (b) => `recorded by the ${b}`, photo: "with a scale photo", nophoto: "no photo",
-      labour: (x) => `Labour on ${x} returned.`, gap: (x) => `Gold balance: ${x} unexplained.`, paid: "Paid (mock UPI).", notReady: "Not ready: " };
+const WORDS = {
+  hi: { kind: KIND_HI, by: (b) => (b === "jeweller" ? "ज्वैलर ने दर्ज किया" : "आपने दर्ज किया"), photo: "तराज़ू की फ़ोटो के साथ", nophoto: "फ़ोटो नहीं",
+        labour: (x) => `${x} वापस किए गहने की मज़दूरी।`, gap: (x) => `बिना हिसाब: ${x}`, paid: "भुगतान हो गया (नकली UPI)।", notReady: "अभी नहीं: ",
+        blocked: blockedIn({ paid: "भुगतान हो चुका है", pending: (n) => `${n} एंट्री पर दूसरी तरफ़ की पुष्टि बाकी है`, gap: (x) => `${x} का हिसाब नहीं मिला`,
+          wait: (ps) => ps.map((p) => (p === "karigar" ? "आपकी" : "ज्वैलर की")).join(" और ") + " मंज़ूरी बाकी है",
+          seal: "पुराना रिकॉर्ड बाद में बदला गया; मुहर मेल नहीं खाती" }) },
+  kn: { kind: KIND_KN, by: (b) => (b === "jeweller" ? "ಜ್ಯುವೆಲ್ಲರ್ ದಾಖಲಿಸಿದ್ದಾರೆ" : "ನೀವು ದಾಖಲಿಸಿದ್ದೀರಿ"), photo: "ತಕ್ಕಡಿಯ ಫೋಟೋ ಸಹಿತ", nophoto: "ಫೋಟೋ ಇಲ್ಲ",
+        labour: (x) => `ವಾಪಸ್ ಕೊಟ್ಟ ${x} ಆಭರಣಕ್ಕೆ ಕೂಲಿ.`, gap: (x) => `ಲೆಕ್ಕಕ್ಕೆ ಸಿಗದ್ದು: ${x}`, paid: "ಪಾವತಿ ಆಗಿದೆ (ಡೆಮೊ UPI).", notReady: "ಇನ್ನೂ ಇಲ್ಲ: ",
+        blocked: blockedIn({ paid: "ಈಗಾಗಲೇ ಪಾವತಿ ಆಗಿದೆ", pending: (n) => `${n} ದಾಖಲೆಗೆ ಇನ್ನೊಬ್ಬರ ದೃಢೀಕರಣ ಬಾಕಿ ಇದೆ`, gap: (x) => `${x} ಲೆಕ್ಕಕ್ಕೆ ಸಿಗುತ್ತಿಲ್ಲ`,
+          wait: (ps) => ps.map((p) => (p === "karigar" ? "ನಿಮ್ಮ" : "ಜ್ಯುವೆಲ್ಲರ್ ಅವರ")).join(" ಮತ್ತು ") + " ಒಪ್ಪಿಗೆ ಬಾಕಿ ಇದೆ",
+          seal: "ಹಳೆಯ ದಾಖಲೆ ನಂತರ ಬದಲಾಗಿದೆ; ಮುದ್ರೆ ಹೊಂದುತ್ತಿಲ್ಲ" }) },
+  en: { kind: KIND, by: (b) => `recorded by the ${b}`, photo: "with a scale photo", nophoto: "no photo",
+        labour: (x) => `Labour on ${x} returned.`, gap: (x) => `Gold balance: ${x} unexplained.`, paid: "Paid (mock UPI).", notReady: "Not ready: ",
+        blocked: (reason) => reason },
+};
+const words = (party) => WORDS[party === "karigar" ? lang : "en"];
 
 // Grams typed or spoken ("3", "2.5", "3 gram", "३ ग्राम", "500 mg") -> whole milligrams, with no floats.
 function toMg(text) {
-  const t = String(text).replace(/[०-९]/g, (d) => "०१२३४५६७८९".indexOf(d)).replace(",", ".");
-  const m = t.match(/(\d+)(?:\.(\d{1,3}))?\s*(mg|milligram|मिलीग्राम)?/i);
+  const t = String(text).replace(/[०-९]/g, (d) => "०१२३४५६७८९".indexOf(d)).replace(/[೦-೯]/g, (d) => "೦೧೨೩೪೫೬೭೮೯".indexOf(d)).replace(",", ".");
+  const m = t.match(/(\d+)(?:\.(\d{1,3}))?\s*(mg|milligram|मिलीग्राम|ಮಿಲಿಗ್ರಾಂ)?/i);
   if (!m) return null;
   if (m[3]) return m[2] ? null : parseInt(m[1], 10);
   return parseInt(m[1], 10) * 1000 + parseInt((m[2] || "").padEnd(3, "0") || "0", 10);
@@ -249,9 +285,9 @@ function settle(party, el, btn) {
   const canApprove = !s.paid && !mine && (s.ready || s.blocked.startsWith("waiting for"));
   el.innerHTML = `<div class="amt">${rupees(s.labour_paise)}</div>` +
     `<div class="why">${esc(w.labour(g(s.return)))} ${esc(w.gap(g(s.unexplained)))}</div>` +
-    `<p class="status ${s.paid ? "good" : "bad"}">${s.paid ? w.paid : esc(w.notReady + s.blocked)}</p>` +
+    `<p class="status ${s.paid ? "good" : "bad"}">${s.paid ? w.paid : esc(w.notReady + w.blocked(s.blocked))}</p>` +
     (s.paid ? "" : `<div class="row" style="display:flex;gap:8px;margin-top:8px">` +
-      `<button class="primary" type="button" data-approve="${party}" ${canApprove ? "" : "disabled"}>${mine ? (party === "karigar" && lang === "hi" ? "मंज़ूर किया" : "Approved") : esc(btn)}</button>` +
+      `<button class="primary" type="button" data-approve="${party}" ${canApprove ? "" : "disabled"}>${mine ? esc(party === "karigar" ? T[lang].approved : "Approved") : esc(btn)}</button>` +
       (party === "jeweller" ? `<button class="gold" type="button" id="pay" ${s.ready ? "" : "disabled"}>Pay karigar (mock UPI)</button>` : "") + `</div>`) +
     (party === "jeweller" ? `<p class="mock">Payment is simulated and labelled. It is refused unless both approved this exact settlement.</p>` : "");
 }
@@ -270,15 +306,20 @@ document.addEventListener("click", (ev) => {
     const text = T[lang].say({ job: S.job, issue: n(r.issue), ret: n(r.return), scrap: n(r.scrap), wastage: n(r.wastage), gap: r.unexplained_mg,
                                labour: Math.floor(S.settlement.labour_paise / 100) });
     $("heard").textContent = text;
-    if ("speechSynthesis" in window) { const u = new SpeechSynthesisUtterance(text); u.lang = lang === "hi" ? "hi-IN" : "en-IN"; speechSynthesis.cancel(); speechSynthesis.speak(u); }
+    if ("speechSynthesis" in window) {
+      // No voice for this language on the phone: say so on screen instead of reading it in the wrong accent.
+      const voices = speechSynthesis.getVoices(), code = SPEECH[lang];
+      if (voices.length && !voices.some((v) => v.lang.replace("_", "-").startsWith(code.slice(0, 2)))) { $("heard").textContent = T[lang].noVoice + " " + text; return; }
+      const u = new SpeechSynthesisUtterance(text); u.lang = code; speechSynthesis.cancel(); speechSynthesis.speak(u);
+    }
   } else if (b.id === "listen") {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) { say(T[lang].noMic); $("wt").focus(); return; }
-    const rec = new SR(); rec.lang = lang === "hi" ? "hi-IN" : "en-IN";
+    const rec = new SR(); rec.lang = SPEECH[lang];
     rec.onresult = (e) => {
       const heard = e.results[0][0].transcript, mg = toMg(heard);
-      if (/स्क्रैप|scrap|बुरादा/i.test(heard)) $("kind").value = "scrap";
-      if (/वापस|return|गहना|complete/i.test(heard)) $("kind").value = "return";
+      if (/स्क्रैप|scrap|बुरादा|ಸ್ಕ್ರ್ಯಾಪ್|ಪುಡಿ/i.test(heard)) $("kind").value = "scrap";
+      if (/वापस|return|गहना|complete|ವಾಪಸ್|ಆಭರಣ/i.test(heard)) $("kind").value = "return";
       if (mg !== null) $("wt").value = g(mg).replace(" g", "");
       say(T[lang].heardPrefix + heard + (mg !== null ? ` → ${g(mg)}` : ""));  // always read back before saving
     };
@@ -289,7 +330,7 @@ document.addEventListener("click", (ev) => {
 $("rec").addEventListener("submit", (ev) => {
   ev.preventDefault();
   const mg = toMg($("wt").value), kind = $("kind").value;
-  if (mg === null) { say(lang === "hi" ? "वज़न समझ नहीं आया।" : "Couldn't read that weight."); $("wt").focus(); return; }
+  if (mg === null) { say(T[lang].badWt); $("wt").focus(); return; }
   // Re-weighing replaces the karigar's own earlier entry of the same kind, as a new entry (never an edit).
   const prev = S.entries.filter((e) => e.type === "weight" && e.kind === kind && e.by === "karigar" && !S.entries.some((x) => x.corrects === e.n)).pop();
   api("/api/record", { kind, mg, by: "karigar", evidence: $("photo").checked ? "scale-photo.jpg" : null,
