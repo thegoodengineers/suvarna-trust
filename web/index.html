@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SUVARNA TRUST: one gold record for jeweller and karigar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Martian+Mono:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --velvet: #123129; --velvet-deep: #0B211C; --readout: #E9F5B8; --lcd: #1B2420; --gold: #C8A24A;
+    --paper: #FFFFFF; --ink: #16201D; --muted: #4E5D58; --line: #DCE3E0; --warn: #A3431F; --ok: #1E6B4A;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Hanken Grotesk", system-ui, sans-serif; color: var(--ink); line-height: 1.45;
+         background: radial-gradient(120% 80% at 50% 0%, var(--velvet) 0%, var(--velvet-deep) 70%); min-height: 100vh; }
+  :lang(hi) { font-family: "Noto Sans Devanagari", "Hanken Grotesk", sans-serif; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 28px 20px 48px; }
+  header.top { color: #fff; display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: end; justify-content: space-between; margin-bottom: 22px; }
+  header.top h1 { font-size: clamp(26px, 3.4vw, 40px); font-weight: 800; letter-spacing: -0.02em; margin: 0; }
+  header.top p { margin: 4px 0 0; color: #CFE0D9; max-width: 60ch; }
+  .demo-tools { display: flex; gap: 8px; flex-wrap: wrap; }
+  button { font: inherit; font-weight: 600; border-radius: 12px; border: 1px solid transparent; padding: 10px 14px; cursor: pointer; }
+  button:disabled { cursor: not-allowed; opacity: .55; }
+  .ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.45); }
+  .primary { background: var(--ink); color: #fff; }
+  .gold { background: var(--gold); color: #1A1407; }
+  .quiet { background: #EEF2F0; color: var(--ink); }
+
+  .board { display: grid; grid-template-columns: minmax(300px, 380px) 1fr minmax(300px, 380px); gap: 22px; align-items: start; }
+  .phone { background: var(--paper); border-radius: 30px; padding: 18px 18px 22px; box-shadow: 0 30px 60px rgba(0,0,0,.35); border: 8px solid #0A1512; }
+  .phone h2 { font-size: 15px; font-weight: 700; margin: 0; }
+  .who { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .who small { color: var(--muted); }
+  .order { font-size: 14px; color: var(--muted); margin: 0 0 12px; }
+  .readout { background: var(--lcd); color: var(--readout); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; }
+  .readout .lbl { font-size: 13px; color: #B9C7A0; }
+  .readout .big { font-family: "Martian Mono", monospace; font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
+  .readout.alert .big { color: #FFC8A8; }
+  .sums { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 14px; margin: 0 0 12px; }
+  .sums dd { margin: 0; font-family: "Martian Mono", monospace; font-size: 13px; text-align: right; }
+  .sums dt { color: var(--muted); }
+  h3 { font-size: 14px; margin: 16px 0 8px; }
+  .findings { margin: 0; padding-left: 18px; font-size: 14px; }
+  .findings li { margin-bottom: 6px; }
+  .todo { border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; font-size: 14px; }
+  .todo .row { display: flex; gap: 8px; margin-top: 8px; }
+  .settle { border: 2px solid var(--ink); border-radius: 16px; padding: 12px 14px; }
+  .settle .amt { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; }
+  .settle .why { font-size: 13px; color: var(--muted); }
+  .status { font-size: 14px; font-weight: 600; margin: 8px 0 0; }
+  .status.bad { color: var(--warn); } .status.good { color: var(--ok); }
+  .mock { font-size: 12px; color: var(--muted); }
+  .lang { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .lang button { border-radius: 0; padding: 5px 10px; background: #fff; color: var(--ink); font-size: 13px; }
+  .lang button[aria-pressed=true] { background: var(--ink); color: #fff; }
+  .voice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .voice button { padding: 14px 10px; font-size: 15px; }
+  form.rec { display: grid; gap: 8px; border: 1px dashed var(--line); border-radius: 14px; padding: 10px 12px; }
+  form.rec label { font-size: 13px; font-weight: 600; }
+  form.rec .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  input, select { font: inherit; padding: 9px 10px; border: 1px solid #9AA8A3; border-radius: 10px; width: 100%; background: #fff; color: var(--ink); }
+  .heard { font-size: 13px; color: var(--muted); min-height: 1.2em; }
+
+  .ledger { background: #F7F9F8; border-radius: 22px; padding: 18px; }
+  .ledger h2 { margin: 0 0 4px; font-size: 18px; }
+  .ledger > p { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+  .chain-state { border-radius: 12px; padding: 10px 12px; font-weight: 600; font-size: 14px; margin-bottom: 12px; }
+  .chain-state.ok { background: #E3F1EA; color: var(--ok); } .chain-state.bad { background: #FBE7DF; color: var(--warn); }
+  ol.entries { list-style: none; margin: 0; padding: 0; }
+  ol.entries li { display: grid; grid-template-columns: 34px 1fr auto; gap: 4px 10px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
+  ol.entries .n { font-family: "Martian Mono", monospace; font-size: 12px; color: var(--muted); padding-top: 2px; }
+  ol.entries .w { font-family: "Martian Mono", monospace; font-size: 13px; text-align: right; }
+  ol.entries .meta { grid-column: 2 / 4; font-size: 12px; color: var(--muted); font-family: "Martian Mono", monospace; overflow-wrap: anywhere; }
+  .tag { display: inline-block; border-radius: 6px; padding: 0 6px; font-size: 12px; font-weight: 700; margin-left: 4px; }
+  .tag.c { background: #F3E9CC; color: #6B5313; } .tag.p { background: #FBE7DF; color: var(--warn); } .tag.x { background: #E9ECEB; color: var(--muted); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  footer { color: #B7CBC3; font-size: 13px; margin-top: 26px; }
+
+  @media (max-width: 1080px) { .board { grid-template-columns: 1fr; max-width: 460px; margin: 0 auto; } .ledger { order: 3; } }
+  @media (prefers-reduced-motion: no-preference) { .flash { animation: flash 1.2s ease-out; } @keyframes flash { from { background: #FFF4CF; } } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>SUVARNA TRUST</h1>
+      <p>One gold record that the jeweller and the karigar both confirm. Weights in milligrams, history sealed, payment only when both approve.</p>
+    </div>
+    <div class="demo-tools" role="group" aria-label="Demo controls">
+      <button class="ghost" id="tamper" type="button">Demo: quietly edit an old entry</button>
+      <button class="ghost" id="reset" type="button">Reset demo</button>
+    </div>
+  </header>
+
+  <main class="board">
+    <section class="phone" aria-labelledby="h-j">
+      <div class="who"><h2 id="h-j">Jeweller · Shree Lakshmi Jewellers</h2></div>
+      <p class="order" id="j-order"></p>
+      <div class="readout" id="j-read"><div class="lbl">Unexplained gold</div><div class="big" id="j-gap"></div></div>
+      <dl class="sums" id="j-sums"></dl>
+      <h3>What the records show</h3>
+      <ul class="findings" id="j-find"></ul>
+      <h3>Waiting for you</h3>
+      <div id="j-todo"></div>
+      <h3>Settlement</h3>
+      <div class="settle" id="j-settle"></div>
+    </section>
+
+    <section class="ledger" aria-labelledby="h-l">
+      <h2 id="h-l">Shared record</h2>
+      <p>Both phones see the same entries. Nothing is edited: a correction is a new entry. Each entry is sealed with the one before it.</p>
+      <div class="chain-state" id="chain" role="status"></div>
+      <ol class="entries" id="entries"></ol>
+    </section>
+
+    <section class="phone" aria-labelledby="h-k">
+      <div class="who">
+        <h2 id="h-k">Karigar · Ramesh</h2>
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="hi" aria-pressed="true">हिंदी</button>
+          <button type="button" data-lang="en" aria-pressed="false">English</button>
+        </div>
+      </div>
+      <div class="readout" id="k-read"><div class="lbl" id="k-lbl"></div><div class="big" id="k-gap"></div></div>
+      <div class="voice">
+        <button class="gold" type="button" id="speak"></button>
+        <button class="primary" type="button" id="listen"></button>
+      </div>
+      <p class="heard" id="heard" aria-live="polite"></p>
+      <form class="rec" id="rec">
+        <div class="two">
+          <div><label for="kind" id="l-kind"></label>
+            <select id="kind"><option value="return"></option><option value="scrap"></option></select></div>
+          <div><label for="wt" id="l-wt"></label><input id="wt" inputmode="decimal" autocomplete="off" placeholder="3.000"></div>
+        </div>
+        <label><input type="checkbox" id="photo" style="width:auto"> <span id="l-photo"></span></label>
+        <button class="primary" type="submit" id="save"></button>
+      </form>
+      <h3 id="k-todo-h"></h3>
+      <div id="k-todo"></div>
+      <h3 id="k-settle-h"></h3>
+      <div class="settle" id="k-settle"></div>
+    </section>
+  </main>
+
+  <footer>Demo data, not field data. Payment is a mock UPI step, clearly labelled. Voice uses the browser's own speech features (best in Chrome).</footer>
+  <p class="sr" id="announce" aria-live="assertive"></p>
+</div>
+
+<script>
+const T = {
+  hi: { lbl: "मेरा हिसाब: बिना हिसाब का सोना", speak: "🔊 सुनिए", listen: "🎤 बोलिए", kind: "क्या", wt: "वज़न (ग्राम)",
+        ret: "वापस किया गहना", scrap: "स्क्रैप / बुरादा", photo: "तराज़ू की फ़ोटो लगी है", save: "दर्ज करें",
+        todo: "आपकी पुष्टि बाकी", settle: "भुगतान", nothing: "कुछ बाकी नहीं", approve: "मंज़ूर है", confirm: "सही है",
+        heardPrefix: "सुना: ", noMic: "इस ब्राउज़र में आवाज़ नहीं चलती; वज़न टाइप करें।",
+        say: (s) => `ऑर्डर ${s.job}. दिया गया ${hiG(s.issue)}. वापस ${hiG(s.ret)}. स्क्रैप ${hiG(s.scrap)}. तय घटत ${hiG(s.wastage)}. ` +
+                    (s.gap === 0 ? "पूरा हिसाब मिल गया।" : `बिना हिसाब ${hiG(s.gap)}.`) + ` मज़दूरी ${s.labour} रुपये.` },
+  en: { lbl: "My account: unexplained gold", speak: "🔊 Read it to me", listen: "🎤 Speak a weight", kind: "What", wt: "Weight (grams)",
+        ret: "Finished piece returned", scrap: "Scrap / filings", photo: "Scale photo attached", save: "Record",
+        todo: "Waiting for you", settle: "Payment", nothing: "Nothing waiting", approve: "I approve", confirm: "Confirm",
+        heardPrefix: "Heard: ", noMic: "Voice isn't available in this browser; type the weight.",
+        say: (s) => `Order ${s.job}. Issued ${enG(s.issue)}. Returned ${enG(s.ret)}. Scrap ${enG(s.scrap)}. Agreed wastage ${enG(s.wastage)}. ` +
+                    (s.gap === 0 ? "Everything is accounted for." : `Unexplained ${enG(s.gap)}.`) + ` Labour ${s.labour} rupees.` },
+};
+let lang = "hi", S = null;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const g = (mg) => `${mg < 0 ? "-" : ""}${Math.floor(Math.abs(mg) / 1000)}.${String(Math.abs(mg) % 1000).padStart(3, "0")} g`;
+const hiG = (mg) => { const a = Math.abs(mg), gr = Math.floor(a / 1000), m = a % 1000; return (gr ? `${gr} ग्राम ` : "") + (m ? `${m} मिलीग्राम` : (gr ? "" : "शून्य")); };
+const enG = (mg) => { const a = Math.abs(mg), gr = Math.floor(a / 1000), m = a % 1000; return (gr ? `${gr} grams ` : "") + (m ? `${m} milligrams` : (gr ? "" : "zero")); };
+const rupees = (p) => "₹" + Math.floor(p / 100).toLocaleString("en-IN");
+const KIND = { issue: "Gold issued", return: "Piece returned", scrap: "Scrap returned", wastage: "Agreed wastage" };
+const KIND_HI = { issue: "दिया गया सोना", return: "वापस किया गहना", scrap: "स्क्रैप", wastage: "तय घटत" };
+// The karigar's phone speaks his language; the jeweller's stays in English.
+const words = (party) => party === "karigar" && lang === "hi"
+  ? { kind: KIND_HI, by: (b) => (b === "jeweller" ? "ज्वैलर ने दर्ज किया" : "आपने दर्ज किया"), photo: "तराज़ू की फ़ोटो के साथ", nophoto: "फ़ोटो नहीं",
+      labour: (x) => `${x} वापस किए गहने की मज़दूरी।`, gap: (x) => `बिना हिसाब: ${x}`, paid: "भुगतान हो गया (नकली UPI)।", notReady: "अभी नहीं: " }
+  : { kind: KIND, by: (b) => `recorded by the ${b}`, photo: "with a scale photo", nophoto: "no photo",
+      labour: (x) => `Labour on ${x} returned.`, gap: (x) => `Gold balance: ${x} unexplained.`, paid: "Paid (mock UPI).", notReady: "Not ready: " };
+
+// Grams typed or spoken ("3", "2.5", "3 gram", "३ ग्राम", "500 mg") -> whole milligrams, with no floats.
+function toMg(text) {
+  const t = String(text).replace(/[०-९]/g, (d) => "०१२३४५६७८९".indexOf(d)).replace(",", ".");
+  const m = t.match(/(\d+)(?:\.(\d{1,3}))?\s*(mg|milligram|मिलीग्राम)?/i);
+  if (!m) return null;
+  if (m[3]) return m[2] ? null : parseInt(m[1], 10);
+  return parseInt(m[1], 10) * 1000 + parseInt((m[2] || "").padEnd(3, "0") || "0", 10);
+}
+
+async function api(path, body) {
+  const r = await fetch(path, body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const data = await r.json();
+  if (!r.ok) { say(data.detail || "Refused"); return; }
+  S = data; render();
+}
+function say(msg) { $("announce").textContent = ""; setTimeout(() => $("announce").textContent = msg, 30); $("heard").textContent = msg; }
+
+function render() {
+  const t = T[lang], r = S.reconcile, s = S.settlement, gap = r.unexplained_mg;
+  // Jeweller
+  $("j-order").textContent = `Order ${S.job} · labour ${rupees(S.rate_paise_per_g)} per gram`;
+  $("j-gap").textContent = g(gap); $("k-gap").textContent = g(gap);
+  $("j-read").classList.toggle("alert", gap !== 0); $("k-read").classList.toggle("alert", gap !== 0);
+  $("j-sums").innerHTML = [["Issued", r.issue], ["Returned", r.return], ["Scrap", r.scrap], ["Agreed wastage", r.wastage]]
+    .map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
+  $("j-find").innerHTML = S.findings.length ? S.findings.map((f) => `<li>${esc(f)}</li>`).join("") : "<li>Every gram is accounted for.</li>";
+  todo("jeweller", $("j-todo"), "Confirm", "Nothing waiting");
+  todo("karigar", $("k-todo"), t.confirm, t.nothing);
+  settle("jeweller", $("j-settle"), "I approve this settlement");
+  settle("karigar", $("k-settle"), t.approve);
+  // Shared record
+  $("chain").className = "chain-state " + (S.chain_ok ? "ok" : "bad");
+  $("chain").textContent = S.chain_ok ? `Sealed: all ${S.entries.length} entries match their seals.` : "Broken seal: " + s.blocked + ". Settlement is blocked.";
+  $("entries").innerHTML = S.entries.map((e) => {
+    let what, tag = "";
+    if (e.type === "weight") {
+      what = `${KIND[e.kind]} · by ${e.by}${e.corrects !== null ? ` · corrects #${e.corrects}` : ""}`;
+      tag = e.confirmed ? '<span class="tag c">both agreed</span>' : '<span class="tag p">waiting</span>';
+      if (S.entries.some((x) => x.corrects === e.n)) tag = '<span class="tag x">replaced</span>';
+    } else if (e.type === "confirm") what = `${e.by} confirmed #${e.ref}`;
+    else if (e.type === "approve") what = `${e.by} approved the settlement`;
+    else what = `Paid ${rupees(e.paise)} (mock UPI)`;
+    return `<li><span class="n">#${e.n}</span><span>${esc(what)} ${tag}${e.evidence ? " · 📷" : ""}${e.note ? `<br><small>${esc(e.note)}</small>` : ""}</span>` +
+           `<span class="w">${e.grams ?? ""}</span><span class="meta">seal ${e.hash.slice(0, 16)}… ← ${e.prev.slice(0, 8)}…</span></li>`;
+  }).join("");
+  // Karigar labels
+  $("k-lbl").textContent = t.lbl; $("speak").textContent = t.speak; $("listen").textContent = t.listen;
+  $("l-kind").textContent = t.kind; $("l-wt").textContent = t.wt; $("l-photo").textContent = t.photo; $("save").textContent = t.save;
+  $("kind").options[0].textContent = t.ret; $("kind").options[1].textContent = t.scrap;
+  $("k-todo-h").textContent = t.todo; $("k-settle-h").textContent = t.settle;
+  $("h-k").parentElement.parentElement.lang = lang;
+}
+
+function todo(party, el, btn, none) {
+  const waiting = S.entries.filter((e) => e.type === "weight" && !e.confirmed && e.by !== party && !S.entries.some((x) => x.corrects === e.n));
+  const w = words(party);
+  el.innerHTML = waiting.length ? waiting.map((e) => `<div class="todo">${esc(w.kind[e.kind])}: <b>${e.grams}</b>, ${esc(w.by(e.by))}, ` +
+    `${e.evidence ? w.photo : w.nophoto}.${e.note ? " " + esc(e.note) + "." : ""}` +
+    `<div class="row"><button class="primary" type="button" data-confirm="${e.n}" data-by="${party}">${esc(btn)} #${e.n}</button></div></div>`).join("")
+    : `<p class="mock">${esc(none)}</p>`;
+}
+
+function settle(party, el, btn) {
+  const s = S.settlement, mine = s.approved_by.includes(party), w = words(party);
+  const canApprove = !s.paid && !mine && (s.ready || s.blocked.startsWith("waiting for"));
+  el.innerHTML = `<div class="amt">${rupees(s.labour_paise)}</div>` +
+    `<div class="why">${esc(w.labour(g(s.return)))} ${esc(w.gap(g(s.unexplained)))}</div>` +
+    `<p class="status ${s.paid ? "good" : "bad"}">${s.paid ? w.paid : esc(w.notReady + s.blocked)}</p>` +
+    (s.paid ? "" : `<div class="row" style="display:flex;gap:8px;margin-top:8px">` +
+      `<button class="primary" type="button" data-approve="${party}" ${canApprove ? "" : "disabled"}>${mine ? (party === "karigar" && lang === "hi" ? "मंज़ूर किया" : "Approved") : esc(btn)}</button>` +
+      (party === "jeweller" ? `<button class="gold" type="button" id="pay" ${s.ready ? "" : "disabled"}>Pay karigar (mock UPI)</button>` : "") + `</div>`) +
+    (party === "jeweller" ? `<p class="mock">Payment is simulated and labelled. It is refused unless both approved this exact settlement.</p>` : "");
+}
+
+document.addEventListener("click", (ev) => {
+  const b = ev.target.closest("button");
+  if (!b) return;
+  if (b.dataset.confirm) api("/api/confirm", { by: b.dataset.by, ref: +b.dataset.confirm });
+  else if (b.dataset.approve) api("/api/approve", { by: b.dataset.approve, seen_hash: S.settlement.hash });
+  else if (b.id === "pay") api("/api/pay", {});
+  else if (b.id === "reset") api("/api/reset", {}).then(() => say("Demo reset."));
+  else if (b.id === "tamper") api("/api/tamper", {}).then(() => say("Entry 4 was quietly edited. The seal no longer matches."));
+  else if (b.dataset.lang) { lang = b.dataset.lang; document.querySelectorAll("[data-lang]").forEach((x) => x.setAttribute("aria-pressed", x === b)); render(); }
+  else if (b.id === "speak") {
+    const r = S.reconcile, n = (x) => toMg(x);
+    const text = T[lang].say({ job: S.job, issue: n(r.issue), ret: n(r.return), scrap: n(r.scrap), wastage: n(r.wastage), gap: r.unexplained_mg,
+                               labour: Math.floor(S.settlement.labour_paise / 100) });
+    $("heard").textContent = text;
+    if ("speechSynthesis" in window) { const u = new SpeechSynthesisUtterance(text); u.lang = lang === "hi" ? "hi-IN" : "en-IN"; speechSynthesis.cancel(); speechSynthesis.speak(u); }
+  } else if (b.id === "listen") {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { say(T[lang].noMic); $("wt").focus(); return; }
+    const rec = new SR(); rec.lang = lang === "hi" ? "hi-IN" : "en-IN";
+    rec.onresult = (e) => {
+      const heard = e.results[0][0].transcript, mg = toMg(heard);
+      if (/स्क्रैप|scrap|बुरादा/i.test(heard)) $("kind").value = "scrap";
+      if (/वापस|return|गहना|complete/i.test(heard)) $("kind").value = "return";
+      if (mg !== null) $("wt").value = g(mg).replace(" g", "");
+      say(T[lang].heardPrefix + heard + (mg !== null ? ` → ${g(mg)}` : ""));  // always read back before saving
+    };
+    rec.start(); say("…");
+  }
+});
+
+$("rec").addEventListener("submit", (ev) => {
+  ev.preventDefault();
+  const mg = toMg($("wt").value), kind = $("kind").value;
+  if (mg === null) { say(lang === "hi" ? "वज़न समझ नहीं आया।" : "Couldn't read that weight."); $("wt").focus(); return; }
+  // Re-weighing replaces the karigar's own earlier entry of the same kind, as a new entry (never an edit).
+  const prev = S.entries.filter((e) => e.type === "weight" && e.kind === kind && e.by === "karigar" && !S.entries.some((x) => x.corrects === e.n)).pop();
+  api("/api/record", { kind, mg, by: "karigar", evidence: $("photo").checked ? "scale-photo.jpg" : null,
+                       note: prev ? "Re-weighed together" : "", corrects: prev ? prev.n : null }).then(() => { $("wt").value = ""; $("photo").checked = false; });
+});
+
+api("/api/state");
+</script>
+</body>
+</html>
