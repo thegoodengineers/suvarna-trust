@@ -19,7 +19,7 @@ Two phones and the record they share, side by side. The story it runs:
 6. "Quietly edit an old entry" changes history the way a notebook can be changed. The seal breaks and
    payment is refused.
 
-The karigar's phone works in Hindi or English, reads the account aloud, and takes weights by voice
+The karigar's phone works in Kannada, Hindi or English, reads the account aloud, and takes weights by voice
 (browser speech features, best in Chrome), always reading the number back before it is saved.
 
 ## What the core guarantees (`ledger.py`, checked by `test_ledger.py`)
