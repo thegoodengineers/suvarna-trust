@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 from ledger import Ledger, grams
@@ -117,3 +119,53 @@ def test_a_tampered_ledger_cannot_be_settled():
 def test_missing_scale_photo_is_pointed_out_without_blame():
     found = job_with_gap().investigate("J1")
     assert found == ["The scrap of 2.500 g has no scale photo. Re-weighing together and recording it with a photo would settle it."]
+
+
+def wedding_order(due):
+    """The second demo order: 40 g for wedding bangles, due on a date, nothing back yet."""
+    L = job_with_gap()
+    e = L.record("J2", "issue", 40000, "jeweller", evidence="scale4.jpg", note="Wedding bangles, 22K")
+    L.confirm(e["n"], "karigar")
+    L.set_due("J2", due, "jeweller")
+    return L
+
+
+def test_deadline_risk_for_a_late_wedding_piece():
+    today = datetime.date(2026, 11, 9)
+    assert wedding_order("2026-11-20").deadline("J2", today) == {"due": "2026-11-20", "days_left": 11, "status": "on time"}
+    assert wedding_order("2026-11-12").deadline("J2", today)["status"] == "at risk"  # 3 days left
+    assert wedding_order("2026-11-09").deadline("J2", today)["status"] == "at risk"  # due today
+    assert wedding_order("2026-11-08").deadline("J2", today) == {"due": "2026-11-08", "days_left": -1, "status": "late"}
+    assert job_with_gap().deadline("J1", today) is None  # no date agreed, no warning
+
+
+def test_a_new_due_date_is_a_new_entry_and_the_latest_counts():
+    L = wedding_order("2026-11-08")
+    L.set_due("J2", "2026-11-25", "jeweller")
+    assert L.deadline("J2", datetime.date(2026, 11, 9))["status"] == "on time"
+    assert [e["due"] for e in L.entries if e["type"] == "due"] == ["2026-11-08", "2026-11-25"]
+    assert L.verify() is None
+
+
+def test_only_a_confirmed_return_ends_the_deadline_warning():
+    L = wedding_order("2026-11-08")
+    today = datetime.date(2026, 11, 9)
+    e = L.record("J2", "return", 39000, "karigar", evidence="scale5.jpg")
+    assert L.deadline("J2", today)["status"] == "late"  # recorded but not yet confirmed
+    L.confirm(e["n"], "jeweller")
+    assert L.deadline("J2", today)["status"] == "returned"
+
+
+def test_bad_due_dates_are_refused():
+    L = Ledger()
+    for bad in ("2026-02-30", "next week", ""):
+        with pytest.raises(ValueError):
+            L.set_due("J2", bad, "jeweller")
+
+
+def test_two_orders_in_one_ledger_do_not_mix():
+    L = wedding_order("2026-11-12")
+    r1, r2 = L.reconcile("J1"), L.reconcile("J2")
+    assert (r1["issue"], r1["unexplained"]) == (100000, 500)
+    assert (r2["issue"], r2["return"], r2["unexplained"]) == (40000, 0, 40000)
+    assert L.investigate("J2") == []  # work still out with the karigar: nothing to explain yet

@@ -1,4 +1,5 @@
 """SUVARNA TRUST demo server: one shared ledger, two parties. Run: python -m uvicorn server:app --port 8770"""
+import datetime
 import pathlib
 
 from fastapi import FastAPI, HTTPException
@@ -10,13 +11,18 @@ from ledger import Ledger, grams
 
 HERE = pathlib.Path(__file__).parent
 app = FastAPI()
-JOB, RATE = "J-1042", 50000  # demo order; labour Rs 500 per gram, in paise
+# Demo orders and their labour rates in paise per gram (Rs 500 and Rs 700).
+JOBS = {"J-1042": {"rate": 50000, "title": "Bridal necklace"},
+        "J-1043": {"rate": 70000, "title": "Wedding bangles"}}
+JOB = "J-1042"
 state = {"ledger": Ledger()}
 
 
 def seed():
-    """The demo story: 100 g issued for a bridal necklace, work returned with a 0.5 g gap and no photo on the scrap."""
-    L = Ledger()
+    """Two demo stories in one shared ledger.
+    J-1042: 100 g issued for a bridal necklace, work returned with a 0.5 g gap and no photo on the scrap.
+    J-1043: 40 g issued for wedding bangles 12 days ago, due in 2 days, nothing back yet: a deadline at risk."""
+    L, today = Ledger(), datetime.date.today()
     e = L.record(JOB, "issue", 100000, "jeweller", evidence="scale-issue.jpg", note="Bridal necklace, 22K")
     L.confirm(e["n"], "karigar")
     e = L.record(JOB, "wastage", 1000, "jeweller", note="Agreed wastage, 1%")
@@ -25,22 +31,33 @@ def seed():
     L.confirm(e["n"], "jeweller")
     e = L.record(JOB, "scrap", 2500, "karigar", note="Filings and cuttings")
     L.confirm(e["n"], "jeweller")
+    e = L.record("J-1043", "issue", 40000, "jeweller", evidence="scale-issue-2.jpg", note="Wedding bangles, pair, 22K")
+    L.confirm(e["n"], "karigar")
+    L.set_due("J-1043", (today + datetime.timedelta(days=2)).isoformat(), "jeweller")
     state["ledger"] = L
 
 
 seed()
 
 
-def view():
-    L = state["ledger"]
-    s = L.settlement(JOB, RATE)
+def job_of(job):
+    if job not in JOBS:
+        raise HTTPException(404, f"no order {job}")
+    return job
+
+
+def view(job=JOB):
+    L, rate = state["ledger"], JOBS[job]["rate"]
+    s = L.settlement(job, rate)
     entries = [{**e, "grams": grams(e["mg"]) if "mg" in e else None, "confirmed": e["type"] == "weight" and L.is_confirmed(e["n"])}
-               for e in L.entries]
-    r, findings, chain_ok = L.reconcile(JOB), L.investigate(JOB), L.verify() is None
-    return {"job": JOB, "rate_paise_per_g": RATE, "entries": entries, "chain_ok": chain_ok,
+               for e in L.entries if e["job"] == job]
+    r, findings, chain_ok = L.reconcile(job), L.investigate(job), L.verify() is None
+    due = L.deadline(job, datetime.date.today())
+    return {"job": job, "jobs": JOBS, "rate_paise_per_g": rate, "entries": entries, "chain_ok": chain_ok,
+            "all_entries": len(L.entries), "deadline": due,
             "reconcile": {k: (grams(v) if isinstance(v, int) else None) for k, v in r.items() if k not in ("job", "pending")}
                          | {"unexplained_mg": r["unexplained"]},
-            "findings": findings, "agent": {lang: agent.explain(r, findings, lang, chain_ok) for lang in agent.LANGS},
+            "findings": findings, "agent": {lang: agent.explain(r, findings, lang, chain_ok, due) for lang in agent.LANGS},
             "settlement": s}
 
 
@@ -51,20 +68,23 @@ class Record(BaseModel):
     evidence: str | None = None
     note: str = ""
     corrects: int | None = None
+    job: str = JOB
 
 
 class Act(BaseModel):
-    by: str
+    by: str = ""
     ref: int | None = None
     seen_hash: str | None = None
+    job: str = JOB
 
 
-def guarded(fn):
+def guarded(job, fn):
+    job = job_of(job)
     try:
         fn()
     except (ValueError, PermissionError) as e:
         raise HTTPException(400, str(e))
-    return view()
+    return view(job)
 
 
 @app.get("/")
@@ -73,38 +93,38 @@ def index():
 
 
 @app.get("/api/state")
-def get_state():
-    return view()
+def get_state(job: str = JOB):
+    return view(job_of(job))
 
 
 @app.post("/api/record")
 def record(r: Record):
-    return guarded(lambda: state["ledger"].record(JOB, r.kind, r.mg, r.by, r.evidence, r.note, r.corrects))
+    return guarded(r.job, lambda: state["ledger"].record(r.job, r.kind, r.mg, r.by, r.evidence, r.note, r.corrects))
 
 
 @app.post("/api/confirm")
 def confirm(a: Act):
-    return guarded(lambda: state["ledger"].confirm(a.ref, a.by))
+    return guarded(a.job, lambda: state["ledger"].confirm(a.ref, a.by))
 
 
 @app.post("/api/approve")
 def approve(a: Act):
-    return guarded(lambda: state["ledger"].approve(JOB, a.by, RATE, a.seen_hash))
+    return guarded(a.job, lambda: state["ledger"].approve(a.job, a.by, JOBS[a.job]["rate"], a.seen_hash))
 
 
 @app.post("/api/pay")
-def pay():
-    return guarded(lambda: state["ledger"].pay(JOB, RATE))
+def pay(a: Act):
+    return guarded(a.job, lambda: state["ledger"].pay(a.job, JOBS[a.job]["rate"]))
 
 
 @app.post("/api/tamper")
-def tamper():
+def tamper(a: Act):
     """Demo only: quietly edit an old entry the way a notebook can be edited, to show the chain catching it."""
     state["ledger"].entries[4]["mg"] = 97000
-    return view()
+    return view(job_of(a.job))
 
 
 @app.post("/api/reset")
-def reset():
+def reset(a: Act):
     seed()
-    return view()
+    return view(job_of(a.job))
