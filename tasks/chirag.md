@@ -14,7 +14,7 @@ Branch: `<yourname>/<task>` → pull request into `main`. Run `python -m pytest 
 ## 2. Keep the ledger core right (ongoing)
 - Files: `ledger.py`, `test_ledger.py`. Every new rule gets a test first.
 - [ ] Review every pull request that touches `ledger.py` or `server.py`.
-- [ ] Add a second demo order (a late wedding piece) once Abhijeet's agent needs one.
+- [x] Second demo order J-1043 (wedding bangles, due in 2 days) with deadline warnings and tests.
 
 ## 3. Final form (by 14 Nov, 9:00 PM)
 - [ ] Put the interview numbers and one quote from each side into `docs/FORM_ANSWERS.md`

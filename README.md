@@ -18,6 +18,8 @@ Two phones and the record they share, side by side. The story it runs:
 5. Both approve the exact settlement (₹48,000 labour on 96 g). Only then the mock UPI payment runs.
 6. "Quietly edit an old entry" changes history the way a notebook can be changed. The seal breaks and
    payment is refused.
+7. A second order, J-1043 (wedding bangles, 40 g), is still with the karigar two days before its due date.
+   Both phones show a deadline warning and the agent suggests agreeing a new date if needed.
 
 The karigar's phone works in Kannada, Hindi or English, reads the account aloud, and takes weights by voice
 (browser speech features, best in Chrome), always reading the number back before it is saved.
@@ -27,6 +29,7 @@ The karigar's phone works in Kannada, Hindi or English, reads the account aloud,
 - Nothing is edited or deleted. Corrections and confirmations are new entries.
 - Each entry is sealed with the hash of the one before it; any change to history is detected.
 - Only entries the *other* party confirmed count. You can't confirm your own entry.
+- A due date is an entry too; a piece not back within 3 days of it is flagged "at risk", after it "late".
 - An approval is for one exact settlement. If anything changes, earlier approvals lapse.
 - Payment is refused unless both approved, nothing is unexplained, and the history is intact. Never twice.
 - The agent (`agent.py`, checked by `test_agent.py`) explains what the records show in English, Hindi or Kannada

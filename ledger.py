@@ -8,6 +8,7 @@ Rules this file enforces (and test_ledger.py checks):
 - Money moves only after both approve the exact settlement; the payment step is a labelled mock.
 The AI layer may explain these results; it never computes them.
 """
+import datetime
 import hashlib
 import json
 import time
@@ -15,6 +16,7 @@ import time
 PARTIES = ("jeweller", "karigar")
 WEIGHT_KINDS = ("issue", "return", "scrap", "wastage")  # what reconciliation adds up
 OTHER = {"jeweller": "karigar", "karigar": "jeweller"}
+WARN_DAYS = 3  # a piece not back within this many days of its due date is "at risk"
 
 
 def grams(mg):
@@ -60,6 +62,13 @@ class Ledger:
         if self.is_confirmed(ref):
             raise ValueError("already confirmed")
         return self._append(type="confirm", job=old["job"], ref=ref, by=by)
+
+    def set_due(self, job, due, by):
+        """Record the date a piece is promised for (YYYY-MM-DD). A new date is a new entry; the old one stays."""
+        if by not in PARTIES:
+            raise ValueError(f"unknown party {by!r}")
+        datetime.date.fromisoformat(due)  # raises ValueError on anything that is not a real date
+        return self._append(type="due", job=job, due=due, by=by)
 
     def approve(self, job, by, rate_paise_per_g, seen_hash):
         """Approve the exact settlement this party was shown (seen_hash). If anything changes afterwards, the
@@ -130,13 +139,25 @@ class Ledger:
         for e in corrections:
             old = self.get(e["corrects"])
             found.append(f"The {e['kind']} was corrected from {grams(old['mg'])} to {grams(e['mg'])} by the {e['by']}.")
-        if r["unexplained"] > 0 and not found:
+        if r["unexplained"] > 0 and not found and (r["return"] or r["scrap"]):  # nothing back yet is not a gap
             found.append(f"{grams(r['unexplained'])} is unaccounted for and every record is confirmed with evidence. "
                          f"Both parties should re-weigh the returned pieces and scrap together.")
         if r["unexplained"] < 0:
             found.append(f"More gold came back than was issued ({grams(-r['unexplained'])} extra). An issue may be "
                          f"missing from the records.")
         return found
+
+    def deadline(self, job, today):
+        """Days until the latest agreed due date, and whether the piece is at risk. Calendar maths only, no gold.
+        A piece counts as back once a return for the job is confirmed by the other party."""
+        dues = [e for e in self.entries if e["type"] == "due" and e["job"] == job]
+        if not dues:
+            return None
+        due = datetime.date.fromisoformat(dues[-1]["due"])
+        days = (due - today).days
+        back = any(e["kind"] == "return" and self.is_confirmed(e["n"]) for e in self.current(job))
+        status = "returned" if back else "late" if days < 0 else "at risk" if days <= WARN_DAYS else "on time"
+        return {"due": due.isoformat(), "days_left": days, "status": status}
 
     def settlement(self, job, rate_paise_per_g):
         """The settlement both must approve. Labour is paid on the confirmed returned weight."""

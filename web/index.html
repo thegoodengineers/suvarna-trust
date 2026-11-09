@@ -36,6 +36,9 @@
   .who { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
   .who small { color: var(--muted); }
   .order { font-size: 14px; color: var(--muted); margin: 0 0 12px; }
+  .due { font-size: 14px; font-weight: 700; margin: -4px 0 12px; color: var(--ok); } .due.risk { color: var(--warn); }
+  .orders { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 0; }
+  .orders button[aria-pressed=true] { background: var(--gold); color: #1A1407; border-color: var(--gold); }
   .readout { background: var(--lcd); color: var(--readout); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; }
   .readout .lbl { font-size: 13px; color: #B9C7A0; }
   .readout .big { font-family: "Martian Mono", monospace; font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
@@ -91,6 +94,7 @@
     <div>
       <h1>SUVARNA TRUST</h1>
       <p>One gold record that the jeweller and the karigar both confirm. Weights in milligrams, history sealed, payment only when both approve.</p>
+      <div class="orders" id="orders" role="group" aria-label="Demo orders"></div>
     </div>
     <div class="demo-tools" role="group" aria-label="Demo controls">
       <button class="ghost" id="tamper" type="button">Demo: quietly edit an old entry</button>
@@ -102,7 +106,8 @@
     <section class="phone" aria-labelledby="h-j">
       <div class="who"><h2 id="h-j">Jeweller · Shree Lakshmi Jewellers</h2></div>
       <p class="order" id="j-order"></p>
-      <div class="readout" id="j-read"><div class="lbl">Unexplained gold</div><div class="big" id="j-gap"></div></div>
+      <p class="due" id="j-due" hidden></p>
+      <div class="readout" id="j-read"><div class="lbl" id="j-lbl">Unexplained gold</div><div class="big" id="j-gap"></div></div>
       <dl class="sums" id="j-sums"></dl>
       <h3>What the records show</h3>
       <div class="explain" id="j-explain"></div>
@@ -129,6 +134,7 @@
           <button type="button" data-lang="en" aria-pressed="false">English</button>
         </div>
       </div>
+      <p class="due" id="k-due" hidden></p>
       <div class="readout" id="k-read"><div class="lbl" id="k-lbl"></div><div class="big" id="k-gap"></div></div>
       <h3 id="k-find-h"></h3>
       <div class="explain" id="k-explain"></div>
@@ -159,14 +165,16 @@
 
 <script>
 const T = {
-  hi: { lbl: "मेरा हिसाब: बिना हिसाब का सोना", find: "रिकॉर्ड क्या बताते हैं", speak: "🔊 सुनिए", listen: "🎤 बोलिए", kind: "क्या", wt: "वज़न (ग्राम)",
+  hi: { lbl: "मेरा हिसाब: बिना हिसाब का सोना", lblOut: "इस ऑर्डर का सोना मेरे पास",
+        due: (d) => d.status === "late" ? `${d.due} तक देना था` : `देय तारीख ${d.due} · ${d.days_left} दिन बाकी`, find: "रिकॉर्ड क्या बताते हैं", speak: "🔊 सुनिए", listen: "🎤 बोलिए", kind: "क्या", wt: "वज़न (ग्राम)",
         ret: "वापस किया गहना", scrap: "स्क्रैप / बुरादा", photo: "तराज़ू की फ़ोटो लगी है", save: "दर्ज करें",
         todo: "आपकी पुष्टि बाकी", settle: "भुगतान", nothing: "कुछ बाकी नहीं", approve: "मंज़ूर है", confirm: "सही है",
         heardPrefix: "सुना: ", noMic: "इस ब्राउज़र में आवाज़ नहीं चलती; वज़न टाइप करें।", approved: "मंज़ूर किया",
         badWt: "वज़न समझ नहीं आया।", noVoice: "इस फ़ोन में हिंदी आवाज़ नहीं है; नीचे लिखा पढ़ें।",
         say: (s) => `ऑर्डर ${s.job}. दिया गया ${hiG(s.issue)}. वापस ${hiG(s.ret)}. स्क्रैप ${hiG(s.scrap)}. तय घटत ${hiG(s.wastage)}. ` +
                     (s.gap === 0 ? "पूरा हिसाब मिल गया।" : `बिना हिसाब ${hiG(s.gap)}.`) + ` मज़दूरी ${s.labour} रुपये.` },
-  en: { lbl: "My account: unexplained gold", find: "What the records show", speak: "🔊 Read it to me", listen: "🎤 Speak a weight", kind: "What", wt: "Weight (grams)",
+  en: { lbl: "My account: unexplained gold", lblOut: "Gold with me for this order",
+        due: (d) => d.status === "late" ? `Was due ${d.due}` : `Due ${d.due} · ${d.days_left} days left`, find: "What the records show", speak: "🔊 Read it to me", listen: "🎤 Speak a weight", kind: "What", wt: "Weight (grams)",
         ret: "Finished piece returned", scrap: "Scrap / filings", photo: "Scale photo attached", save: "Record",
         todo: "Waiting for you", settle: "Payment", nothing: "Nothing waiting", approve: "I approve", confirm: "Confirm",
         heardPrefix: "Heard: ", noMic: "Voice isn't available in this browser; type the weight.", approved: "Approved",
@@ -174,7 +182,8 @@ const T = {
         say: (s) => `Order ${s.job}. Issued ${enG(s.issue)}. Returned ${enG(s.ret)}. Scrap ${enG(s.scrap)}. Agreed wastage ${enG(s.wastage)}. ` +
                     (s.gap === 0 ? "Everything is accounted for." : `Unexplained ${enG(s.gap)}.`) + ` Labour ${s.labour} rupees.` },
   // Kannada: still to be checked line by line by a native speaker (tasks/bhumika.md).
-  kn: { lbl: "ನನ್ನ ಲೆಕ್ಕ: ಲೆಕ್ಕಕ್ಕೆ ಸಿಗದ ಚಿನ್ನ", find: "ದಾಖಲೆಗಳು ಏನು ಹೇಳುತ್ತವೆ", speak: "🔊 ಓದಿ ಹೇಳಿ", listen: "🎤 ತೂಕ ಹೇಳಿ", kind: "ಏನು", wt: "ತೂಕ (ಗ್ರಾಂ)",
+  kn: { lbl: "ನನ್ನ ಲೆಕ್ಕ: ಲೆಕ್ಕಕ್ಕೆ ಸಿಗದ ಚಿನ್ನ", lblOut: "ಈ ಆರ್ಡರ್‌ನ ಚಿನ್ನ ನನ್ನ ಬಳಿ",
+        due: (d) => d.status === "late" ? `${d.due} ರೊಳಗೆ ಕೊಡಬೇಕಿತ್ತು` : `ಕೊಡಬೇಕಾದ ದಿನಾಂಕ ${d.due} · ${d.days_left} ದಿನ ಉಳಿದಿದೆ`, find: "ದಾಖಲೆಗಳು ಏನು ಹೇಳುತ್ತವೆ", speak: "🔊 ಓದಿ ಹೇಳಿ", listen: "🎤 ತೂಕ ಹೇಳಿ", kind: "ಏನು", wt: "ತೂಕ (ಗ್ರಾಂ)",
         ret: "ವಾಪಸ್ ಕೊಟ್ಟ ಆಭರಣ", scrap: "ಸ್ಕ್ರ್ಯಾಪ್ / ಪುಡಿ", photo: "ತಕ್ಕಡಿಯ ಫೋಟೋ ಇದೆ", save: "ದಾಖಲಿಸಿ",
         todo: "ನಿಮ್ಮ ದೃಢೀಕರಣ ಬಾಕಿ", settle: "ಪಾವತಿ", nothing: "ಏನೂ ಬಾಕಿ ಇಲ್ಲ", approve: "ಒಪ್ಪಿಗೆ ಇದೆ", confirm: "ಸರಿ ಇದೆ",
         heardPrefix: "ಕೇಳಿದ್ದು: ", noMic: "ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಧ್ವನಿ ಸೌಲಭ್ಯ ಇಲ್ಲ; ತೂಕವನ್ನು ಟೈಪ್ ಮಾಡಿ.", approved: "ಒಪ್ಪಿಗೆ ನೀಡಿದ್ದೀರಿ",
@@ -207,17 +216,17 @@ const blockedIn = (why) => (reason) => {
 // The karigar's phone speaks his language; the jeweller's stays in English.
 const WORDS = {
   hi: { kind: KIND_HI, by: (b) => (b === "jeweller" ? "ज्वैलर ने दर्ज किया" : "आपने दर्ज किया"), photo: "तराज़ू की फ़ोटो के साथ", nophoto: "फ़ोटो नहीं",
-        labour: (x) => `${x} वापस किए गहने की मज़दूरी।`, gap: (x) => `बिना हिसाब: ${x}`, paid: "भुगतान हो गया (नकली UPI)।", notReady: "अभी नहीं: ",
+        labour: (x) => `${x} वापस किए गहने की मज़दूरी।`, gap: (x) => `बिना हिसाब: ${x}`, paid: "भुगतान हो गया (नकली UPI)।", notReady: "अभी नहीं: ", notBack: "गहना अभी वापस नहीं आया",
         blocked: blockedIn({ paid: "भुगतान हो चुका है", pending: (n) => `${n} एंट्री पर दूसरी तरफ़ की पुष्टि बाकी है`, gap: (x) => `${x} का हिसाब नहीं मिला`,
           wait: (ps) => ps.map((p) => (p === "karigar" ? "आपकी" : "ज्वैलर की")).join(" और ") + " मंज़ूरी बाकी है",
           seal: "पुराना रिकॉर्ड बाद में बदला गया; मुहर मेल नहीं खाती" }) },
   kn: { kind: KIND_KN, by: (b) => (b === "jeweller" ? "ಜ್ಯುವೆಲ್ಲರ್ ದಾಖಲಿಸಿದ್ದಾರೆ" : "ನೀವು ದಾಖಲಿಸಿದ್ದೀರಿ"), photo: "ತಕ್ಕಡಿಯ ಫೋಟೋ ಸಹಿತ", nophoto: "ಫೋಟೋ ಇಲ್ಲ",
-        labour: (x) => `ವಾಪಸ್ ಕೊಟ್ಟ ${x} ಆಭರಣಕ್ಕೆ ಕೂಲಿ.`, gap: (x) => `ಲೆಕ್ಕಕ್ಕೆ ಸಿಗದ್ದು: ${x}`, paid: "ಪಾವತಿ ಆಗಿದೆ (ಡೆಮೊ UPI).", notReady: "ಇನ್ನೂ ಇಲ್ಲ: ",
+        labour: (x) => `ವಾಪಸ್ ಕೊಟ್ಟ ${x} ಆಭರಣಕ್ಕೆ ಕೂಲಿ.`, gap: (x) => `ಲೆಕ್ಕಕ್ಕೆ ಸಿಗದ್ದು: ${x}`, paid: "ಪಾವತಿ ಆಗಿದೆ (ಡೆಮೊ UPI).", notReady: "ಇನ್ನೂ ಇಲ್ಲ: ", notBack: "ಆಭರಣ ಇನ್ನೂ ವಾಪಸ್ ಬಂದಿಲ್ಲ",
         blocked: blockedIn({ paid: "ಈಗಾಗಲೇ ಪಾವತಿ ಆಗಿದೆ", pending: (n) => `${n} ದಾಖಲೆಗೆ ಇನ್ನೊಬ್ಬರ ದೃಢೀಕರಣ ಬಾಕಿ ಇದೆ`, gap: (x) => `${x} ಲೆಕ್ಕಕ್ಕೆ ಸಿಗುತ್ತಿಲ್ಲ`,
           wait: (ps) => ps.map((p) => (p === "karigar" ? "ನಿಮ್ಮ" : "ಜ್ಯುವೆಲ್ಲರ್ ಅವರ")).join(" ಮತ್ತು ") + " ಒಪ್ಪಿಗೆ ಬಾಕಿ ಇದೆ",
           seal: "ಹಳೆಯ ದಾಖಲೆ ನಂತರ ಬದಲಾಗಿದೆ; ಮುದ್ರೆ ಹೊಂದುತ್ತಿಲ್ಲ" }) },
   en: { kind: KIND, by: (b) => `recorded by the ${b}`, photo: "with a scale photo", nophoto: "no photo",
-        labour: (x) => `Labour on ${x} returned.`, gap: (x) => `Gold balance: ${x} unexplained.`, paid: "Paid (mock UPI).", notReady: "Not ready: ",
+        labour: (x) => `Labour on ${x} returned.`, gap: (x) => `Gold balance: ${x} unexplained.`, paid: "Paid (mock UPI).", notReady: "Not ready: ", notBack: "the piece has not come back yet",
         blocked: (reason) => reason },
 };
 const words = (party) => WORDS[party === "karigar" ? lang : "en"];
@@ -231,8 +240,10 @@ function toMg(text) {
   return parseInt(m[1], 10) * 1000 + parseInt((m[2] || "").padEnd(3, "0") || "0", 10);
 }
 
+let job = "J-1042";
 async function api(path, body) {
-  const r = await fetch(path, body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const r = await fetch(body === undefined ? `${path}?job=${encodeURIComponent(job)}` : path,
+    body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...body, job }) });
   const data = await r.json();
   if (!r.ok) { say(data.detail || "Refused"); return; }
   S = data; render();
@@ -242,9 +253,19 @@ function say(msg) { $("announce").textContent = ""; setTimeout(() => $("announce
 function render() {
   const t = T[lang], r = S.reconcile, s = S.settlement, gap = r.unexplained_mg;
   // Jeweller
-  $("j-order").textContent = `Order ${S.job} · labour ${rupees(S.rate_paise_per_g)} per gram`;
+  $("j-order").textContent = `Order ${S.job} · ${S.jobs[S.job].title} · labour ${rupees(S.rate_paise_per_g)} per gram`;
+  $("orders").innerHTML = Object.entries(S.jobs).map(([id, o]) =>
+    `<button class="ghost" type="button" data-job="${esc(id)}" aria-pressed="${id === S.job}">${esc(id)} · ${esc(o.title)}</button>`).join("");
+  // Deadline: dates come from the ledger (Ledger.deadline); shown only while the piece is not back.
+  const d = S.deadline, showDue = d && d.status !== "returned", risk = showDue && d.status !== "on time";
+  for (const [id, text] of [["j-due", showDue && T.en.due(d)], ["k-due", showDue && t.due(d)]]) {
+    $(id).hidden = !showDue; $(id).textContent = showDue ? (risk ? "⚠ " : "") + text : ""; $(id).classList.toggle("risk", !!risk);
+  }
+  // Nothing back yet: the gold is out for work, not unexplained.
+  const out = s.return === 0 && s.scrap === 0 && gap > 0;
+  $("j-lbl").textContent = out ? "Gold with the karigar" : "Unexplained gold";
   $("j-gap").textContent = g(gap); $("k-gap").textContent = g(gap);
-  $("j-read").classList.toggle("alert", gap !== 0); $("k-read").classList.toggle("alert", gap !== 0);
+  $("j-read").classList.toggle("alert", gap !== 0 && !out); $("k-read").classList.toggle("alert", gap !== 0 && !out);
   $("j-sums").innerHTML = [["Issued", r.issue], ["Returned", r.return], ["Scrap", r.scrap], ["Agreed wastage", r.wastage]]
     .map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
   explain($("j-explain"), S.agent.en); explain($("k-explain"), S.agent[lang]);
@@ -254,7 +275,7 @@ function render() {
   settle("karigar", $("k-settle"), t.approve);
   // Shared record
   $("chain").className = "chain-state " + (S.chain_ok ? "ok" : "bad");
-  $("chain").textContent = S.chain_ok ? `Sealed: all ${S.entries.length} entries match their seals.` : "Broken seal: " + s.blocked + ". Settlement is blocked.";
+  $("chain").textContent = S.chain_ok ? `Sealed: all ${S.all_entries} entries match their seals.` : "Broken seal: " + s.blocked + ". Settlement is blocked.";
   $("entries").innerHTML = S.entries.map((e) => {
     let what, tag = "";
     if (e.type === "weight") {
@@ -263,12 +284,13 @@ function render() {
       if (S.entries.some((x) => x.corrects === e.n)) tag = '<span class="tag x">replaced</span>';
     } else if (e.type === "confirm") what = `${e.by} confirmed #${e.ref}`;
     else if (e.type === "approve") what = `${e.by} approved the settlement`;
+    else if (e.type === "due") what = `Due date ${e.due} · set by ${e.by}`;
     else what = `Paid ${rupees(e.paise)} (mock UPI)`;
     return `<li><span class="n">#${e.n}</span><span>${esc(what)} ${tag}${e.evidence ? " · 📷" : ""}${e.note ? `<br><small>${esc(e.note)}</small>` : ""}</span>` +
            `<span class="w">${e.grams ?? ""}</span><span class="meta">seal ${e.hash.slice(0, 16)}… ← ${e.prev.slice(0, 8)}…</span></li>`;
   }).join("");
   // Karigar labels
-  $("k-lbl").textContent = t.lbl; $("speak").textContent = t.speak; $("listen").textContent = t.listen;
+  $("k-lbl").textContent = out ? t.lblOut : t.lbl; $("speak").textContent = t.speak; $("listen").textContent = t.listen;
   $("l-kind").textContent = t.kind; $("l-wt").textContent = t.wt; $("l-photo").textContent = t.photo; $("save").textContent = t.save;
   $("kind").options[0].textContent = t.ret; $("kind").options[1].textContent = t.scrap;
   $("k-find-h").textContent = t.find; $("k-todo-h").textContent = t.todo; $("k-settle-h").textContent = t.settle;
@@ -296,7 +318,7 @@ function settle(party, el, btn) {
   const canApprove = !s.paid && !mine && (s.ready || s.blocked.startsWith("waiting for"));
   el.innerHTML = `<div class="amt">${rupees(s.labour_paise)}</div>` +
     `<div class="why">${esc(w.labour(g(s.return)))} ${esc(w.gap(g(s.unexplained)))}</div>` +
-    `<p class="status ${s.paid ? "good" : "bad"}">${s.paid ? w.paid : esc(w.notReady + w.blocked(s.blocked))}</p>` +
+    `<p class="status ${s.paid ? "good" : "bad"}">${s.paid ? w.paid : esc(w.notReady + (s.return === 0 && s.scrap === 0 && / is unexplained$/.test(s.blocked) ? w.notBack : w.blocked(s.blocked)))}</p>` +
     (s.paid ? "" : `<div class="row" style="display:flex;gap:8px;margin-top:8px">` +
       `<button class="primary" type="button" data-approve="${party}" ${canApprove ? "" : "disabled"}>${mine ? esc(party === "karigar" ? T[lang].approved : "Approved") : esc(btn)}</button>` +
       (party === "jeweller" ? `<button class="gold" type="button" id="pay" ${s.ready ? "" : "disabled"}>Pay karigar (mock UPI)</button>` : "") + `</div>`) +
@@ -309,6 +331,7 @@ document.addEventListener("click", (ev) => {
   if (b.dataset.confirm) api("/api/confirm", { by: b.dataset.by, ref: +b.dataset.confirm });
   else if (b.dataset.approve) api("/api/approve", { by: b.dataset.approve, seen_hash: S.settlement.hash });
   else if (b.id === "pay") api("/api/pay", {});
+  else if (b.dataset.job) { job = b.dataset.job; api("/api/state"); }
   else if (b.id === "reset") api("/api/reset", {}).then(() => say("Demo reset."));
   else if (b.id === "tamper") api("/api/tamper", {}).then(() => say("Entry 4 was quietly edited. The seal no longer matches."));
   else if (b.dataset.lang) { lang = b.dataset.lang; document.querySelectorAll("[data-lang]").forEach((x) => x.setAttribute("aria-pressed", x === b)); render(); }

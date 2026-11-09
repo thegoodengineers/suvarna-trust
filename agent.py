@@ -44,6 +44,10 @@ SAY = {
         "corrected": lambda k, old, new, by: f"The {k} was re-weighed: {by} recorded {new} in place of {old}. The old entry stays visible.",
         "unaccounted": lambda w: f"Every record is confirmed with evidence, but {w} is still not accounted for.",
         "extra": lambda w: f"More gold came back than the records show as issued ({w} extra).",
+        "risk": lambda due, d: f"The piece is due on {due}" + (" (today)" if d == 0 else f", {d} day{'s' if d != 1 else ''} from now")
+                               + ", and has not come back yet.",
+        "late": lambda due, d: f"The piece was due on {due} and has not come back yet.",
+        "out": lambda w: f"{w} of gold is with the karigar for this order; nothing has come back yet.",
         "zero": "Every gram is accounted for.", "gap": lambda w: f"{w} of gold is not explained yet.",
         "uneven": "The records do not balance yet.",
         "sealed": "An old entry was changed after it was recorded, so these numbers cannot be relied on until it is restored.",
@@ -52,6 +56,8 @@ SAY = {
                  "unaccounted": "Next: re-weigh the returned pieces and the scrap together.",
                  "extra": "Next: check together whether an issue of gold is missing from the records.",
                  "sealed": "Next: compare with the copy on both phones. No payment until the history matches its seal.",
+                 "deadline": "Next: talk today about whether the date can be met, and record a new date if both agree.",
+                 "wait": "Next: nothing to do until the piece comes back.",
                  "done": "Next: both of you can look at the settlement and approve it."}},
     "hi": {
         "pending": lambda k, w, by, o: f"{by} ने {k} {w} दर्ज किया है; {o} की पुष्टि बाकी है, इसलिए यह अभी गिना नहीं गया।",
@@ -59,6 +65,9 @@ SAY = {
         "corrected": lambda k, old, new, by: f"{k} फिर से तौला गया: {by} ने {old} की जगह {new} दर्ज किया। पुरानी एंट्री भी दिखती रहेगी।",
         "unaccounted": lambda w: f"हर रिकॉर्ड पुष्टि और सबूत के साथ है, फिर भी {w} का हिसाब नहीं मिला।",
         "extra": lambda w: f"रिकॉर्ड में जितना सोना दिया गया, उससे ज़्यादा वापस आया ({w} ज़्यादा)।",
+        "risk": lambda due, d: f"गहना {due} तक देना है" + (" (आज)" if d == 0 else f", यानी {d} दिन बाकी") + ", और अभी वापस नहीं आया।",
+        "late": lambda due, d: f"गहना {due} तक देना था और अभी वापस नहीं आया।",
+        "out": lambda w: f"इस ऑर्डर का {w} सोना कारीगर के पास है; अभी कुछ वापस नहीं आया।",
         "zero": "पूरा हिसाब मिल गया, हर ग्राम का।", "gap": lambda w: f"{w} सोने का हिसाब अभी नहीं मिला।",
         "uneven": "हिसाब अभी बराबर नहीं है।",
         "sealed": "एक पुरानी एंट्री दर्ज होने के बाद बदली गई है, इसलिए जब तक वह ठीक न हो, इन आंकड़ों पर भरोसा नहीं किया जा सकता।",
@@ -67,6 +76,8 @@ SAY = {
                  "unaccounted": "अगला कदम: लौटे गहने और स्क्रैप साथ बैठकर फिर से तौलें।",
                  "extra": "अगला कदम: साथ में देखें कि कोई 'दिया गया सोना' रिकॉर्ड छूटा तो नहीं।",
                  "sealed": "अगला कदम: दोनों फ़ोन की कॉपी से मिलाएं। जब तक रिकॉर्ड मुहर से मेल न खाए, भुगतान नहीं होगा।",
+                 "deadline": "अगला कदम: आज ही बात करें कि तारीख तक काम हो पाएगा या नहीं; दोनों राज़ी हों तो नई तारीख दर्ज करें।",
+                 "wait": "अगला कदम: गहना वापस आने तक कुछ करना नहीं है।",
                  "done": "अगला कदम: दोनों भुगतान का हिसाब देखकर मंज़ूरी दें।"}},
     "kn": {
         "pending": lambda k, w, by, o: f"{by} ದಾಖಲಿಸಿದ {k} {w} ಅನ್ನು {o} ಇನ್ನೂ ದೃಢೀಕರಿಸಿಲ್ಲ, ಹಾಗಾಗಿ ಅದನ್ನು ಇನ್ನೂ ಲೆಕ್ಕಕ್ಕೆ ತೆಗೆದುಕೊಂಡಿಲ್ಲ.",
@@ -74,6 +85,9 @@ SAY = {
         "corrected": lambda k, old, new, by: f"{k} ಮತ್ತೆ ತೂಕ ಮಾಡಲಾಗಿದೆ: {by} {old} ಬದಲು {new} ದಾಖಲಿಸಿದ್ದಾರೆ. ಹಳೆಯ ದಾಖಲೆಯೂ ಕಾಣುತ್ತಲೇ ಇರುತ್ತದೆ.",
         "unaccounted": lambda w: f"ಎಲ್ಲಾ ದಾಖಲೆಗಳು ದೃಢೀಕರಣ ಮತ್ತು ಸಾಕ್ಷಿ ಸಹಿತ ಇವೆ, ಆದರೂ {w} ಇನ್ನೂ ಲೆಕ್ಕಕ್ಕೆ ಸಿಕ್ಕಿಲ್ಲ.",
         "extra": lambda w: f"ದಾಖಲೆಯಲ್ಲಿ ಕೊಟ್ಟದ್ದಕ್ಕಿಂತ ಹೆಚ್ಚು ಚಿನ್ನ ವಾಪಸ್ ಬಂದಿದೆ ({w} ಹೆಚ್ಚು).",
+        "risk": lambda due, d: f"ಆಭರಣವನ್ನು {due} ರೊಳಗೆ ಕೊಡಬೇಕು" + (" (ಇಂದೇ)" if d == 0 else f", ಇನ್ನು {d} ದಿನ ಉಳಿದಿದೆ") + ", ಇನ್ನೂ ವಾಪಸ್ ಬಂದಿಲ್ಲ.",
+        "late": lambda due, d: f"ಆಭರಣವನ್ನು {due} ರೊಳಗೆ ಕೊಡಬೇಕಿತ್ತು, ಇನ್ನೂ ವಾಪಸ್ ಬಂದಿಲ್ಲ.",
+        "out": lambda w: f"ಈ ಆರ್ಡರ್‌ನ {w} ಚಿನ್ನ ಕಾರಿಗರ್ ಬಳಿ ಇದೆ; ಇನ್ನೂ ಏನೂ ವಾಪಸ್ ಬಂದಿಲ್ಲ.",
         "zero": "ಪ್ರತಿ ಗ್ರಾಂ ಚಿನ್ನದ ಲೆಕ್ಕ ಸರಿಯಾಗಿದೆ.", "gap": lambda w: f"{w} ಚಿನ್ನ ಇನ್ನೂ ಲೆಕ್ಕಕ್ಕೆ ಸಿಕ್ಕಿಲ್ಲ.",
         "uneven": "ಲೆಕ್ಕ ಇನ್ನೂ ಸರಿಹೊಂದಿಲ್ಲ.",
         "sealed": "ಹಳೆಯ ದಾಖಲೆಯೊಂದು ದಾಖಲಿಸಿದ ನಂತರ ಬದಲಾಗಿದೆ, ಅದನ್ನು ಸರಿಪಡಿಸುವವರೆಗೆ ಈ ಸಂಖ್ಯೆಗಳನ್ನು ನಂಬಲು ಆಗುವುದಿಲ್ಲ.",
@@ -82,20 +96,28 @@ SAY = {
                  "unaccounted": "ಮುಂದಿನ ಹೆಜ್ಜೆ: ವಾಪಸ್ ಬಂದ ಆಭರಣ ಮತ್ತು ಸ್ಕ್ರ್ಯಾಪ್ ಅನ್ನು ಇಬ್ಬರೂ ಸೇರಿ ಮತ್ತೆ ತೂಕ ಮಾಡಿ.",
                  "extra": "ಮುಂದಿನ ಹೆಜ್ಜೆ: ಯಾವುದಾದರೂ 'ಕೊಟ್ಟ ಚಿನ್ನ' ದಾಖಲೆ ಬಿಟ್ಟುಹೋಗಿದೆಯೇ ಎಂದು ಒಟ್ಟಿಗೆ ನೋಡಿ.",
                  "sealed": "ಮುಂದಿನ ಹೆಜ್ಜೆ: ಎರಡೂ ಫೋನ್‌ಗಳಲ್ಲಿರುವ ಪ್ರತಿಯೊಂದಿಗೆ ಹೋಲಿಸಿ. ದಾಖಲೆ ಮುದ್ರೆಗೆ ಹೊಂದುವವರೆಗೆ ಪಾವತಿ ಇಲ್ಲ.",
+                 "deadline": "ಮುಂದಿನ ಹೆಜ್ಜೆ: ದಿನಾಂಕದೊಳಗೆ ಕೆಲಸ ಆಗುತ್ತದೆಯೇ ಎಂದು ಇಂದೇ ಮಾತನಾಡಿ; ಇಬ್ಬರೂ ಒಪ್ಪಿದರೆ ಹೊಸ ದಿನಾಂಕ ದಾಖಲಿಸಿ.",
+                 "wait": "ಮುಂದಿನ ಹೆಜ್ಜೆ: ಆಭರಣ ವಾಪಸ್ ಬರುವವರೆಗೆ ಏನೂ ಮಾಡಬೇಕಿಲ್ಲ.",
                  "done": "ಮುಂದಿನ ಹೆಜ್ಜೆ: ಇಬ್ಬರೂ ಪಾವತಿ ವಿವರ ನೋಡಿ ಒಪ್ಪಿಗೆ ನೀಡಿ."}},
 }
-NEXT_ORDER = ("pending", "photo", "unaccounted", "extra")  # the first open question is the one to settle first
+NEXT_ORDER = ("pending", "photo", "deadline", "unaccounted", "extra")  # the first open question is the one to settle first
 
 
-def template(reconcile, findings, lang="en", chain_ok=True):
-    """Deterministic explanation. Restates the ledger's facts; computes nothing."""
+def template(reconcile, findings, lang="en", chain_ok=True, deadline=None):
+    """Deterministic explanation. Restates the ledger's facts (and Ledger.deadline(), if given); computes nothing."""
     say, kind, who = SAY[lang], KIND[lang], WHO[lang]
     gap = reconcile["unexplained"]
+    nothing_back = reconcile["return"] == 0 and reconcile["scrap"] == 0
     if not chain_ok:
         summary = say["sealed"]
     else:
-        summary = say["zero"] if gap == 0 else say["gap"](grams(gap)) if gap > 0 else say["uneven"]
+        summary = (say["zero"] if gap == 0 else say["out"](grams(gap)) if gap > 0 and nothing_back
+                   else say["gap"](grams(gap)) if gap > 0 else say["uneven"])
     points, seen = [], {}
+    if deadline and deadline["status"] in ("at risk", "late"):  # the most urgent fact goes first
+        key = "risk" if deadline["status"] == "at risk" else "late"
+        points.append(say[key](deadline["due"], deadline["days_left"]))
+        seen["deadline"] = None
     for f in findings:
         for name, rx in SHAPES:
             m = rx.match(f)
@@ -121,7 +143,7 @@ def template(reconcile, findings, lang="en", chain_ok=True):
     else:
         open_ = [n for n in NEXT_ORDER if n in seen]
         step = (nxt[open_[0]](seen[open_[0]]) if open_ and open_[0] in ("pending", "photo")
-                else nxt[open_[0]] if open_ else nxt["done"])
+                else nxt[open_[0]] if open_ else nxt["wait"] if gap > 0 and nothing_back else nxt["done"])
     return {"summary": summary, "points": points, "next": step, "source": "template"}
 
 
@@ -131,15 +153,15 @@ def numbers(text):
     return set(re.findall(r"\d+(?:[.,]\d+)?", text))
 
 
-def allowed_numbers(reconcile, findings):
+def allowed_numbers(reconcile, findings, deadline=None):
     """The numbers the agent may say: those in its input, and weights in the ledger's own grams() form."""
     mgs = [v for v in reconcile.values() if isinstance(v, int)] + [e["mg"] for e in reconcile.get("pending", [])]
-    return numbers(json.dumps(reconcile, default=str) + " ".join(findings) + " ".join(grams(v) for v in mgs))
+    return numbers(json.dumps([reconcile, deadline], default=str) + " ".join(findings) + " ".join(grams(v) for v in mgs))
 
 
-def safe(answer, reconcile, findings):
+def safe(answer, reconcile, findings, deadline=None):
     text = " ".join([answer["summary"], *answer["points"], answer["next"]])
-    return not BLAME.search(text) and numbers(text) <= allowed_numbers(reconcile, findings)
+    return not BLAME.search(text) and numbers(text) <= allowed_numbers(reconcile, findings, deadline)
 
 
 PROMPT = ("You help a jeweller and a karigar (goldsmith) understand their shared gold record. Rewrite the draft "
@@ -169,14 +191,15 @@ def _llm(facts, lang):
         return None
 
 
-def explain(reconcile, findings, lang="en", chain_ok=True):
+def explain(reconcile, findings, lang="en", chain_ok=True, deadline=None):
     """The explanation one phone shows under "What the records show"."""
     if lang not in LANGS:
         raise ValueError(f"unknown language {lang!r}")
-    draft = template(reconcile, findings, lang, chain_ok)
+    draft = template(reconcile, findings, lang, chain_ok, deadline)
     if os.environ.get("SUVARNA_LLM_API_KEY") and os.environ.get("SUVARNA_LLM_MODEL"):
-        facts = json.dumps({"draft": draft, "findings": findings, "chain_ok": chain_ok}, ensure_ascii=False, sort_keys=True)
+        facts = json.dumps({"draft": draft, "findings": findings, "chain_ok": chain_ok, "deadline": deadline},
+                           ensure_ascii=False, sort_keys=True)
         answer = _llm(facts, lang)
-        if answer and safe(answer, reconcile, findings):
+        if answer and safe(answer, reconcile, findings, deadline):
             return answer
     return draft
