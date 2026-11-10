@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SUVARNA TRUST deck</title>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;800&family=Martian+Mono:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* Same palette as the app (design/REFS.md). One slide = one 1280x720 page. */
+  :root { --velvet:#123129; --deep:#0B211C; --readout:#E9F5B8; --lcd:#1B2420; --gold:#C8A24A; --paper:#fff; --ink:#16201D;
+          --mist:#B9C9C2; --warn:#E8A27F; }
+  @page { size: 1280px 720px; margin: 0; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: "Hanken Grotesk", sans-serif; background: #000; }
+  .s { width: 1280px; height: 720px; position: relative; overflow: hidden; padding: 64px 72px; color: #fff;
+       background: radial-gradient(120% 90% at 30% 0%, var(--velvet) 0%, var(--deep) 75%); page-break-after: always; }
+  .k { font-family: "Martian Mono", monospace; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+  h1 { font-size: 64px; line-height: 1.02; font-weight: 800; letter-spacing: -.02em; margin-top: 18px; }
+  h2 { font-size: 44px; line-height: 1.08; font-weight: 800; letter-spacing: -.015em; margin-top: 14px; max-width: 900px; }
+  p, li { font-size: 21px; line-height: 1.45; color: var(--mist); }
+  .foot { position: absolute; left: 72px; right: 72px; bottom: 32px; display: flex; justify-content: space-between;
+          font-family: "Martian Mono", monospace; font-size: 12px; color: #7F958C; }
+  .lcd { background: var(--lcd); border-radius: 22px; padding: 22px 30px; display: inline-block; }
+  .lcd .l { font-size: 15px; color: #C9D6B0; }
+  .lcd .n { font-family: "Martian Mono", monospace; font-size: 96px; color: var(--warn); line-height: 1.05; }
+  .lcd .n.ok { color: var(--readout); }
+  .fill { border: 2px dashed var(--gold); border-radius: 14px; padding: 14px 18px; color: var(--gold); font-size: 19px; }
+  .fill b { font-family: "Martian Mono", monospace; font-size: 12px; letter-spacing: .12em; display: block; margin-bottom: 4px; }
+  .shot { border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,.45); display: block; }
+  .grid4 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 22px; margin-top: 24px; }
+  .grid4 figure { margin: 0; }
+  .grid4 img { width: 100%; height: 218px; object-fit: cover; object-position: top left; }
+  figcaption { font-size: 16px; color: #fff; margin-top: 8px; font-weight: 600; }
+  figcaption span { font-family: "Martian Mono", monospace; color: var(--gold); margin-right: 8px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 30px; }
+  .card { background: var(--paper); color: var(--ink); border-radius: 18px; padding: 22px 24px; }
+  .card h3 { font-size: 22px; margin-bottom: 6px; }
+  .card p { color: #4E5D58; font-size: 17px; }
+  ul { padding-left: 22px; }
+  .gold { color: var(--gold); }
+  .chips { position: absolute; left: 72px; right: 72px; bottom: 84px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .chips span { border: 1px solid #3C5A50; border-radius: 999px; padding: 8px 14px; font-size: 16px; color: #E4ECE8; }
+  .s .card h3 { margin-top: 0; }
+  .s .cols .card { padding: 26px 26px 30px; }
+</style>
+</head>
+<body>
+
+<!-- 1. Problem -->
+<section class="s">
+  <div class="k">Tech4Bharat 2026 · Problem 2.2 · Jeweltech</div>
+  <h1>Gold given to karigars<br>is tracked on trust,<br>and disputes follow.</h1>
+  <p style="max-width:640px;margin-top:22px">Today: a notebook or slip, wastage agreed verbally, deadlines chased by phone, accounts settled at month end.</p>
+  <div class="fill" style="max-width:640px;margin-top:26px"><b>TO FILL AFTER INTERVIEWS</b>One quote from a karigar or jeweller, exact words, with consent (docs/FIELD.md).</div>
+  <div style="position:absolute;right:72px;top:190px;text-align:right">
+    <div class="lcd" style="text-align:left"><div class="l">Unexplained gold, demo order</div><div class="n">0.500 g</div></div>
+    <p style="font-size:15px;margin-top:10px">Illustrative demo figure, not field data.</p>
+  </div>
+  <div class="foot"><span>SUVARNA TRUST · The Good Engineers</span><span>Problem text: organisers' statement 2.2 · 1 / 6</span></div>
+</section>
+
+<!-- 2. What we heard -->
+<section class="s">
+  <div class="k">What we heard</div>
+  <h2>What the organisers say it costs, and what our interviews add.</h2>
+  <div class="cols">
+    <div>
+      <p class="gold" style="font-weight:600">From the problem statement</p>
+      <ul style="margin-top:8px">
+        <li>Unexplained gold losses</li><li>Soured relationships</li><li>Missed wedding dates</li><li>Artisans waiting weeks to be paid</li>
+      </ul>
+      <p style="margin-top:16px;font-size:18px">Hard part: accuracy to the gram, one record both sides accept, and fairness to the karigar, who has less power.</p>
+    </div>
+    <div style="display:grid;gap:12px">
+      <div class="fill"><b>TO FILL AFTER INTERVIEWS</b>Jewellers and karigars interviewed: __ and __</div>
+      <div class="fill"><b>TO FILL AFTER INTERVIEWS</b>Grams unexplained in a typical month, as said: __</div>
+      <div class="fill"><b>TO FILL AFTER INTERVIEWS</b>Days a karigar waits to be paid, as said: __</div>
+      <div class="fill"><b>TO FILL AFTER INTERVIEWS</b>Language they want first: __</div>
+    </div>
+  </div>
+  <div class="foot"><span>Only numbers people actually said · docs/FIELD.md</span><span>2 / 6</span></div>
+</section>
+
+<!-- 3. Demo story -->
+<section class="s" style="padding-top:48px">
+  <div class="k">The working demo · illustrative data</div>
+  <h2 style="font-size:36px">One shared record, from gap to payment.</h2>
+  <div class="grid4">
+    <figure><img class="shot" src="../screenshots/01-gap.png" alt=""><figcaption><span>1</span>100 g issued, 0.500 g unexplained. The scrap has no scale photo.</figcaption></figure>
+    <figure><img class="shot" src="../screenshots/02-reweighed.png" alt=""><figcaption><span>2</span>Re-weighed with a photo as a new entry. Gap: 0.000 g.</figcaption></figure>
+    <figure><img class="shot" src="../screenshots/03-paid.png" alt="" style="object-position:left bottom"><figcaption><span>3</span>Both approve the exact settlement. Then mock UPI pays.</figcaption></figure>
+    <figure><img class="shot" src="../screenshots/04-broken-seal.png" alt=""><figcaption><span>4</span>Quietly edit an old entry: the seal breaks, payment is refused.</figcaption></figure>
+  </div>
+  <div class="foot"><span>Runs today: github.com/thegoodengineers/suvarna-trust</span><span>3 / 6</span></div>
+</section>
+
+<!-- 4. Why both sides trust it -->
+<section class="s">
+  <div class="k">Why both sides trust it</div>
+  <h2 style="max-width:640px">Nothing can be quietly changed, and no one is paid without both saying yes.</h2>
+  <div style="display:grid;grid-template-columns:repeat(2,300px);gap:16px;margin-top:28px">
+    <div class="card"><h3>Milligrams, not guesses</h3><p>Whole milligrams in tested code. The AI never computes a balance.</p></div>
+    <div class="card"><h3>A seal on every entry</h3><p>Each entry carries the hash of the one before. Corrections are new entries.</p></div>
+    <div class="card"><h3>Two approvals</h3><p>Payment needs both sides to approve one exact settlement, nothing unexplained.</p></div>
+    <div class="card"><h3>An agent that explains</h3><p>Kannada, Hindi or English, without blame. It suggests; people decide.</p></div>
+  </div>
+  <img class="shot" src="../screenshots/07-karigar-kannada.png" alt="" style="position:absolute;right:72px;top:64px;width:300px;height:592px;object-fit:cover;object-position:top">
+  <div class="foot"><span>Karigar phone in Kannada · voice read-aloud and voice entry</span><span>4 / 6</span></div>
+</section>
+
+<!-- 5. Business model and jobs -->
+<section class="s">
+  <div class="k">Business model and jobs</div>
+  <h2>Jewellers pay. Karigars use it free, and own their record.</h2>
+  <div class="cols" style="grid-template-columns:1fr 1fr 1fr;gap:18px">
+    <div class="card"><h3>Jeweller subscription</h3><p>Monthly, per shop. Pays for the shared record, reconciliation and the agent.</p><div class="fill" style="margin-top:12px;font-size:15px"><b>FROM INTERVIEWS</b>Price jewellers called fair: __</div></div>
+    <div class="card"><h3>Trust Passport</h3><p>With the karigar's consent, his verified work record helps lenders and new jewellers trust him. Referral fee.</p></div>
+    <div class="card"><h3>Assisted path</h3><p>JanAI Café operators help karigars without a smartphone and earn per assisted transaction.</p></div>
+  </div>
+  <p class="gold" style="font-weight:600;margin-top:40px">Jobs and livelihoods</p>
+  <p style="margin-top:6px;max-width:1000px">Karigars paid faster and losing fewer disputes; a verified record helps skilled karigars win new work and credit for tools; operators get a paid local role. Growth goes market by market, because jewellers in one market share the same karigars.</p>
+  <div class="foot"><span>No market-size figures until we can source them</span><span>5 / 6</span></div>
+</section>
+
+<!-- 6. Team and plan -->
+<section class="s">
+  <div class="k">Team and prototype plan</div>
+  <h2>The Good Engineers</h2>
+  <div class="cols" style="grid-template-columns:1fr 1.2fr">
+    <div>
+      <p><b style="color:#fff">Chirag</b> · ledger core and submission</p>
+      <p><b style="color:#fff">Bhumika</b> · karigar phone, Kannada, design</p>
+      <p><b style="color:#fff">Ayush</b> · field interviews, evidence</p>
+      <p><b style="color:#fff">Abhijeet</b> · agent and architecture</p>
+    </div>
+    <div>
+      <p class="gold" style="font-weight:600">If shortlisted (23 Nov), by 15 Dec</p>
+      <ul style="margin-top:6px">
+        <li>Separate jeweller and karigar logins, offline-first sync</li>
+        <li>Scale-photo reading, proposed by the agent, confirmed by people</li>
+        <li>Deadline alerts and the karigar's Trust Passport</li>
+        <li>JanAI Café assisted path with the karigar's own voice "yes"</li>
+      </ul>
+      <p style="margin-top:12px;font-size:18px">We will measure, not claim: gaps caught, time to settle, payments made without both approvals (target zero).</p>
+    </div>
+  </div>
+  <div class="chips"><span class="k" style="border:0;padding:8px 0;font-size:12px">Running today</span>
+    <span>Milligram ledger with tests</span><span>Sealed history</span><span>Two-approval mock UPI</span>
+    <span>Agent in Kannada, Hindi, English</span><span>Voice read-aloud and entry</span><span>Deadline warnings</span></div>
+  <div class="foot"><span>github.com/thegoodengineers/suvarna-trust</span><span>6 / 6</span></div>
+</section>
+
+</body>
+</html>
