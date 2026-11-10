@@ -38,6 +38,8 @@ def everything(answer):
 def no_key(monkeypatch):
     monkeypatch.delenv("SUVARNA_LLM_API_KEY", raising=False)
     monkeypatch.delenv("SUVARNA_LLM_MODEL", raising=False)
+    monkeypatch.delenv("SUVARNA_LYZR_API_KEY", raising=False)
+    monkeypatch.delenv("SUVARNA_LYZR_AGENT_ID", raising=False)
     agent._llm.cache_clear()
 
 
@@ -115,3 +117,39 @@ def test_the_wedding_piece_warning_reads_right():
     assert by["due-soon"]["points"] == ["The piece is due on 2026-11-11, 2 days from now, and has not come back yet."]
     assert by["due-today"]["points"] == ["The piece is due on 2026-11-09 (today), and has not come back yet."]
     assert by["overdue"]["points"] == ["The piece was due on 2026-11-05 and has not come back yet."]
+
+
+def with_lyzr(monkeypatch, response):
+    """Lyzr switched on, with its HTTP call replaced: records what would be sent, answers with `response`."""
+    monkeypatch.setenv("SUVARNA_LYZR_API_KEY", "lyzr-test-key")
+    monkeypatch.setenv("SUVARNA_LYZR_AGENT_ID", "agent-123")
+    monkeypatch.setenv("SUVARNA_LLM_API_KEY", "test-key")  # both configured: Lyzr wins
+    monkeypatch.setenv("SUVARNA_LLM_MODEL", "test-model")
+    sent = {}
+
+    def fake_post(url, body, headers):
+        sent.update(url=url, body=body, headers=headers)
+        if isinstance(response, Exception):
+            raise response
+        return response
+    monkeypatch.setattr(agent, "_post", fake_post)
+    _, r, f, ok, d = [x for x in situations() if x[0] == "gap"][0]
+    return agent.explain(r, f, "kn", ok, d), sent
+
+
+def test_lyzr_is_called_the_documented_way(monkeypatch):
+    reply = '{"text": "0.500 g ಚಿನ್ನ ಇನ್ನೂ ಲೆಕ್ಕಕ್ಕೆ ಸಿಕ್ಕಿಲ್ಲ.", "next": "ಮತ್ತೆ ತೂಕ ಮಾಡಿ."}'
+    a, sent = with_lyzr(monkeypatch, {"response": reply})
+    assert a["source"] == "lyzr" and a["summary"].startswith("0.500 g")
+    assert sent["url"] == agent.LYZR_URL and sent["headers"] == {"x-api-key": "lyzr-test-key"}
+    assert sent["body"]["agent_id"] == "agent-123" and "never add, round or calculate" in sent["body"]["message"]
+    assert {"user_id", "session_id", "message"} <= set(sent["body"])
+
+
+def test_a_lyzr_answer_is_checked_like_any_other(monkeypatch):
+    bad = '{"text": "ಕಾರಿಗರ್ ಕದ್ದಿರಬಹುದು, ಸುಮಾರು 0.5 g.", "next": "ಕೇಳಿ."}'  # blames, and rounds the weight
+    assert with_lyzr(monkeypatch, {"agent_response": bad})[0]["source"] == "template"
+    agent._llm.cache_clear()
+    assert with_lyzr(monkeypatch, OSError("no network"))[0]["source"] == "template"
+    agent._llm.cache_clear()
+    assert with_lyzr(monkeypatch, {"response": "Sure! Here is a friendly version."})[0]["source"] == "template"

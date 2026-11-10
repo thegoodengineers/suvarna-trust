@@ -48,6 +48,19 @@ with a scale photo"). It can use a language model, but every answer is checked: 
 input, or a blaming word, and the answer is replaced by fixed templates. The same happens if the model is
 unreachable, so the demo works with no key and no network.
 
+### Switching on Lyzr (the event's AI partner)
+`agent.py` calls a Lyzr agent through Lyzr's documented Agent API (`POST
+https://agent-prod.studio.lyzr.ai/v3/inference/chat/`, header `x-api-key`, body `user_id`, `agent_id`,
+`session_id`, `message`). It needs a Lyzr Studio account, so it is off until someone with our credits does this:
+1. Sign in at studio.lyzr.ai with the team account, create an agent (any model; role "explains a shared gold
+   record politely"), and copy its agent ID and the account's API key.
+2. Before starting the server: `SUVARNA_LYZR_API_KEY=<key>` and `SUVARNA_LYZR_AGENT_ID=<id>` (PowerShell:
+   `$env:SUVARNA_LYZR_API_KEY="<key>"`). Never commit the key.
+3. Run the demo; the explanation's `source` in `/api/state` says `lyzr` when its answer was used.
+The rules are sent in every message, so the agent's Studio instructions cannot loosen them, and every answer
+still passes the same check (no new numbers, no blame) or the templates are used. If both Lyzr and
+`SUVARNA_LLM_*` are set, Lyzr is used. Tests (`test_agent.py`) check the request shape without a network.
+
 Tools it may use (prototype round): read a job's facts; draft a reminder for the jeweller or karigar to
 send themselves; read a scale photo and *propose* a weight that the person then records and the other
 party confirms; warn about a deadline.

@@ -34,9 +34,10 @@ The karigar's phone works in Kannada, Hindi or English, reads the account aloud,
 - Payment is refused unless both approved, nothing is unexplained, and the history is intact. Never twice.
 - The agent (`agent.py`, checked by `test_agent.py`) explains what the records show in English, Hindi or Kannada
   and suggests one next step. It only restates weights it was given, never blames anyone, and never computes a
-  balance, moves money or decides a dispute. It uses a language model only if `SUVARNA_LLM_API_KEY` and
-  `SUVARNA_LLM_MODEL` are set (any OpenAI-compatible endpoint via `SUVARNA_LLM_URL`); otherwise, or if the
-  model's answer breaks a rule, it uses fixed templates.
+  balance, moves money or decides a dispute. It uses a language model only if one is configured: a Lyzr agent
+  (`SUVARNA_LYZR_API_KEY`, `SUVARNA_LYZR_AGENT_ID`, see `docs/ARCHITECTURE.md`) or any OpenAI-compatible endpoint
+  (`SUVARNA_LLM_API_KEY`, `SUVARNA_LLM_MODEL`, `SUVARNA_LLM_URL`); otherwise, or if the model's answer breaks a
+  rule, it uses fixed templates.
 
 ## Run it
 ```

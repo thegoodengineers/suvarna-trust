@@ -4,9 +4,11 @@ explanation in English, Hindi or Kannada, plus one suggested next step.
 It explains; it never computes. Every weight it says is copied from its input, it never says who is at
 fault, and it cannot move money or close a dispute (it has no access to the ledger's write methods).
 
-A language model is used only when SUVARNA_LLM_API_KEY and SUVARNA_LLM_MODEL are set (any OpenAI-compatible
-chat endpoint, SUVARNA_LLM_URL). Its answer is checked against the same rules as the templates; if it
-states a number that is not in the input, uses blaming words, or the call fails, the templates are used.
+A language model is used only when one is configured: a Lyzr agent (SUVARNA_LYZR_API_KEY and
+SUVARNA_LYZR_AGENT_ID, Lyzr's inference chat API), or else any OpenAI-compatible chat endpoint
+(SUVARNA_LLM_API_KEY, SUVARNA_LLM_MODEL, optional SUVARNA_LLM_URL). Its answer is checked against the same
+rules as the templates; if it states a number that is not in the input, uses blaming words, or the call
+fails, the templates are used.
 """
 import functools
 import json
@@ -170,23 +172,53 @@ PROMPT = ("You help a jeweller and a karigar (goldsmith) understand their shared
           "anyone is at fault; keep the next step. Answer only with JSON: {{\"text\": \"...\", \"next\": \"...\"}}")
 
 
+def _reply(content, source):
+    """The model's JSON answer ({"text", "next"}) as an explanation; anything else raises and the templates answer."""
+    reply = json.loads(content.strip().removeprefix("```json").removesuffix("```"))
+    return {"summary": str(reply["text"]), "points": [], "next": str(reply["next"]), "source": source}
+
+
+def _post(url, body, headers):
+    req = urllib.request.Request(url, json.dumps(body).encode(), {"Content-Type": "application/json", **headers})
+    with urllib.request.urlopen(req, timeout=8) as r:
+        return json.load(r)
+
+
 def _ask_llm(facts, lang):
     url = os.environ.get("SUVARNA_LLM_URL", "https://api.openai.com/v1/chat/completions")
     body = {"model": os.environ["SUVARNA_LLM_MODEL"], "temperature": 0,
             "messages": [{"role": "system", "content": PROMPT.format(lang=lang)}, {"role": "user", "content": facts}]}
-    req = urllib.request.Request(url, json.dumps(body).encode(), {"Content-Type": "application/json",
-                                                                    "Authorization": "Bearer " + os.environ["SUVARNA_LLM_API_KEY"]})
-    with urllib.request.urlopen(req, timeout=8) as r:
-        content = json.load(r)["choices"][0]["message"]["content"]
-    reply = json.loads(content.strip().removeprefix("```json").removesuffix("```"))
-    return {"summary": str(reply["text"]), "points": [], "next": str(reply["next"]), "source": "llm"}
+    r = _post(url, body, {"Authorization": "Bearer " + os.environ["SUVARNA_LLM_API_KEY"]})
+    return _reply(r["choices"][0]["message"]["content"], "llm")
+
+
+LYZR_URL = "https://agent-prod.studio.lyzr.ai/v3/inference/chat/"  # Lyzr Agent API: chat with an agent
+
+
+def _ask_lyzr(facts, lang):
+    """The same rewrite through an agent made in Lyzr Studio. The rules go in every message, so the agent's own
+    Studio instructions cannot loosen them, and safe() still checks the answer."""
+    agent_id = os.environ["SUVARNA_LYZR_AGENT_ID"]
+    body = {"user_id": "suvarna-demo", "agent_id": agent_id, "session_id": f"{agent_id}-{lang}",
+            "message": PROMPT.format(lang=lang) + "\n\n" + facts}
+    r = _post(os.environ.get("SUVARNA_LYZR_URL", LYZR_URL), body, {"x-api-key": os.environ["SUVARNA_LYZR_API_KEY"]})
+    return _reply(r.get("response") or r["agent_response"], "lyzr")  # the docs show both field names
+
+
+def backend():
+    """Which model rewrites the explanation, or None for templates only. Lyzr first when both are set."""
+    if os.environ.get("SUVARNA_LYZR_API_KEY") and os.environ.get("SUVARNA_LYZR_AGENT_ID"):
+        return _ask_lyzr
+    if os.environ.get("SUVARNA_LLM_API_KEY") and os.environ.get("SUVARNA_LLM_MODEL"):
+        return _ask_llm
+    return None
 
 
 @functools.lru_cache(maxsize=256)
-def _llm(facts, lang):
+def _llm(ask, facts, lang):
     """One call per distinct situation and language; a failure is remembered too, so a dead API costs one timeout."""
     try:
-        return _ask_llm(facts, lang)
+        return ask(facts, lang)
     except Exception:  # any API, network or format problem: the templates answer instead
         return None
 
@@ -196,10 +228,11 @@ def explain(reconcile, findings, lang="en", chain_ok=True, deadline=None):
     if lang not in LANGS:
         raise ValueError(f"unknown language {lang!r}")
     draft = template(reconcile, findings, lang, chain_ok, deadline)
-    if os.environ.get("SUVARNA_LLM_API_KEY") and os.environ.get("SUVARNA_LLM_MODEL"):
+    ask = backend()
+    if ask:
         facts = json.dumps({"draft": draft, "findings": findings, "chain_ok": chain_ok, "deadline": deadline},
                            ensure_ascii=False, sort_keys=True)
-        answer = _llm(facts, lang)
+        answer = _llm(ask, facts, lang)
         if answer and safe(answer, reconcile, findings, deadline):
             return answer
     return draft
