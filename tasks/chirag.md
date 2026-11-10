@@ -12,8 +12,7 @@ Branch: `<yourname>/<task>` → pull request into `main`. Run `python -m pytest 
 - [ ] Read the IP terms on HackCulture before accepting (they differ from the GAVS site).
 
 ## 2. Keep the ledger core right (ongoing)
-- Files: `ledger.py`, `test_ledger.py`. Every new rule gets a test first.
-- [ ] Review every pull request that touches `ledger.py` or `server.py`.
+- Files: `ledger.py`, `test_ledger.py`. Every new rule gets a test first. Review every pull request that touches them.
 - [x] Second demo order J-1043 (wedding bangles, due in 2 days) with deadline warnings and tests.
 
 ## 3. Final form (by 14 Nov, 9:00 PM)
@@ -23,5 +22,6 @@ Branch: `<yourname>/<task>` → pull request into `main`. Run `python -m pytest 
 - [ ] One person reads it aloud start to finish; cut anything that sounds like filler.
 
 ## 4. Submit (14 Nov night, a day early)
-- [ ] Paste each section into the HackCulture form, add the repo link and the deck if ready.
+- [ ] Paste each section into the HackCulture form and add the repo link. Add the deck only if Ayush has filled
+      its interview boxes.
 - [ ] Screenshot the confirmation into the team chat.

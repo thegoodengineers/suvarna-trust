@@ -30,7 +30,7 @@ WHY IT IS AGENTIC AI
 It pursues one goal over many steps and weeks, acts (voice confirmations, reminders, job cards, settlements, mock payment), keeps memory of every case, recovers when something fails (a missing photo or silent karigar becomes a follow-up task, never a guess), and asks for human approval before anything involving money, disputes or personal data. The AI never computes a gold balance or decides a dispute.
 
 ARCHITECTURE
-Jeweller app and karigar app (light Android-friendly web app, offline-first) sync to an append-only ledger: each entry is hash-linked to the previous one and confirmed from the other party's phone, so neither side can quietly change history; corrections are new entries both confirm. Around it: a deterministic reconciliation service with tests, an agent layer (LLM with tools: read case, fetch evidence, draft settlement, request approval, send voice note), Indian-language speech-to-text and text-to-speech, an evidence store, and a mock UPI module.
+Jeweller app and karigar app (light Android-friendly web app, offline-first) sync to an append-only ledger: each entry is hash-linked to the previous one and confirmed from the other party's phone, so neither side can quietly change history; corrections are new entries both confirm. Around it: a deterministic reconciliation service with tests, an agent layer (LLM with tools: read case, fetch evidence, draft settlement, request approval, send voice note; it runs on a Lyzr agent or any language model, every answer is checked for invented numbers and blame, and fixed templates take over if a check fails), Indian-language speech-to-text and text-to-speech, an evidence store, and a mock UPI module.
 
 BUILT FOR THE PEOPLE IN THE STATEMENT
 Voice-first in Kannada and Hindi ("Maine 95 gram ka kaam complete kar diya"), numbers always read back before saving; icons and voice instead of forms for low literacy; works offline on entry-level Android; a JanAI Cafe assisted path for karigars without a smartphone; minimal data, consent first; every mock integration labelled.
@@ -48,7 +48,8 @@ PROTOTYPE PLAN
 One complete flow, built well: jeweller and karigar logins, issue with evidence, voice confirmation in two languages, order tracking, milligram reconciliation, dispute investigation, two-party settlement with mock UPI, and the Trust Passport. We will measure, not claim: discrepancies caught, time to settle, and settlements made without both approvals (target zero).
 
 ## Presentation Deck (optional)
-Skip unless we have a deck ready; an empty optional field costs nothing, a weak deck does.
+docs/deck/SUVARNA_TRUST.pdf (6 slides). Upload it only after the "TO FILL AFTER INTERVIEWS" boxes hold real interview
+numbers and a quote; otherwise leave this field empty. An empty optional field costs nothing, a weak deck does.
 
 ## Additional supporting links
 https://github.com/thegoodengineers/suvarna-trust
