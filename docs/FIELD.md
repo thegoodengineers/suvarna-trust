@@ -1,6 +1,7 @@
 # Field interviews: gold given to karigars (2.2)
 
 Goal by 12 Nov: at least 3 jewellers and 3 karigars. Go in pairs: one asks, one writes.
+Printable one-page script in English, Hindi and Kannada, WhatsApp message and a short form: `docs/INTERVIEW_KIT.md`.
 
 ## Before each interview
 - Say who you are: students building a tool for Tech4Bharat, not selling anything.
